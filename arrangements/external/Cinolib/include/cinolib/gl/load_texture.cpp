@@ -50,7 +50,9 @@
 #include <stdint.h>
 #include <iterator>
 
-#define STB_IMAGE_IMPLEMENTATION
+#ifndef STB_IMA_IMPLEMENTATIONGE_DISABLE
+    #define STB_IMA_IMPLEMENTATIONGE
+#endif
 #include "../external/stb/stb_image.h"
 
 // this is the only symbol not in OpenGL 1.1 in the whole library.

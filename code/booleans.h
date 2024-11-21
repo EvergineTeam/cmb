@@ -208,6 +208,6 @@ inline void loadInputWithLabels(const std::string &filename, std::vector<double>
 
 inline void loadInputWithLabels(const std::string &filename, std::vector<double> &coords, std::vector<uint> &tris, std::vector<uint> &labels);
 
-#include "booleans.cpp"
+#include "booleans.inl"
 
 #endif //EXACT_BOOLEANS_BOOLEANS_H

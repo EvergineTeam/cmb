@@ -134,6 +134,6 @@ class FOctree
 
 }
 
-#include "foctree.cpp"
+#include "foctree.inl"
 
 #endif

@@ -35,6 +35,7 @@
  *                                                                                       *
  * ***************************************************************************************/
 
+#include "foctree.h"
 #include <cinolib/parallel_for.h>
 #include <cinolib/geometry/segment.h>
 #include <cinolib/geometry/triangle.h>

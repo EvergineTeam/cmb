@@ -1,55 +1,35 @@
-/*****************************************************************************************
- *              MIT License                                                              *
- *                                                                                       *
- * Copyright (c) 2022 G. Cherchi, F. Pellacini, M. Attene and M. Livesu                  *
- *                                                                                       *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this  *
- * software and associated documentation files (the "Software"), to deal in the Software *
- * without restriction, including without limitation the rights to use, copy, modify,    *
- * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to    *
- * permit persons to whom the Software is furnished to do so, subject to the following   *
- * conditions:                                                                           *
- *                                                                                       *
- * The above copyright notice and this permission notice shall be included in all copies *
- * or substantial portions of the Software.                                              *
- *                                                                                       *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,   *
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A         *
- * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT    *
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION     *
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE        *
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                *
- *                                                                                       *
- * Authors:                                                                              *
- *      Gianmarco Cherchi (g.cherchi@unica.it)                                           *
- *      https://www.gianmarcocherchi.com                                                 *
- *                                                                                       *
- *      Fabio Pellacini (fabio.pellacini@uniroma1.it)                                    *
- *      https://pellacini.di.uniroma1.it                                                 *
- *                                                                                       *
- *      Marco Attene (marco.attene@ge.imati.cnr.it)                                      *
- *      https://www.cnr.it/en/people/marco.attene/                                       *
- *                                                                                       *
- *      Marco Livesu (marco.livesu@ge.imati.cnr.it)                                      *
- *      http://pers.ge.imati.cnr.it/livesu/                                              *
- *                                                                                       *
- * ***************************************************************************************/
+#define STB_IMA_IMPLEMENTATIONGE_DISABLE
+#include <cmb.h>
 
 #ifdef _MSC_VER // Workaround for known bugs and issues on MSVC
-#define _HAS_STD_BYTE 0  // https://developercommunity.visualstudio.com/t/error-c2872-byte-ambiguous-symbol/93889
-#define NOMINMAX // https://stackoverflow.com/questions/1825904/error-c2589-on-stdnumeric-limitsdoublemin
+    #define _HAS_STD_BYTE 0  // https://developercommunity.visualstudio.com/t/error-c2872-byte-ambiguous-symbol/93889
+    #define NOMINMAX // https://stackoverflow.com/questions/1825904/error-c2589-on-stdnumeric-limitsdoublemin
 #endif
+#include "io_functions.h"
 
-#include "booleans.h"
+struct Mesh {
+    std::vector<float> positions;
+    std::vector<uint32_t> indices;
+};
 
-std::vector<std::string> files;
+Mesh loadMesh(const std::string path)
+{
+    std::vector<double> positions;
+    std::vector<uint> indices;
+    std::vector<uint> labels;
+
+    loadMultipleFiles({ path }, positions, indices, labels);
+
+    return Mesh{
+        std::vector<float>{positions.begin(), positions.end()},
+        std::vector<uint32_t>{indices}
+    };
+}
 
 int main(int argc, char **argv)
 {
-    BoolOp op;
-    std::string file_out;
-
-    if(argc < 5)
+    cmb_BooleanType op;
+    if(argc != 5)
     {
         std::cout << "syntax error!" << std::endl;
         std::cout << "./exact_boolean BOOL_OPERATION (intersection OR union OR subtraction) input1.obj input2.obj output.obj" << std::endl;
@@ -57,27 +37,36 @@ int main(int argc, char **argv)
     }
     else
     {
-        if (strcmp(argv[1], "intersection") == 0)       op = INTERSECTION;
-        else if (strcmp(argv[1], "union") == 0)         op = UNION;
-        else if (strcmp(argv[1], "subtraction") == 0)   op = SUBTRACTION;
-        else if (strcmp(argv[1], "xor") == 0)           op = XOR;
+        if (strcmp(argv[1], "intersection") == 0)       op = CMB_INTERSECTION;
+        else if (strcmp(argv[1], "union") == 0)         op = CMB_UNION;
+        else if (strcmp(argv[1], "subtraction") == 0)   op = CMB_DIFFERENCE;
+        else if (strcmp(argv[1], "xor") == 0)           op = CMB_XOR;
+        else {
+            printf("Invalid boolean type %s\n", argv[1]);
+            exit(1);
+        }
     }
 
+    std::vector<std::string> files;
     for(int i = 2; i < (argc -1); i++)
         files.emplace_back(argv[i]);
+    Mesh meshA = loadMesh(argv[2]);
+    Mesh meshB = loadMesh(argv[3]);
 
-    file_out = argv[argc-1];
+    std::string file_out = argv[4];
 
-    std::vector<double> in_coords, bool_coords;
-    std::vector<uint> in_tris, bool_tris;
-    std::vector<uint> in_labels;
-    std::vector<std::bitset<NBIT>> bool_labels;
+    auto result = cmb_boolean(op,
+        meshA.positions.size() / 3, meshA.indices.size() / 3, meshA.positions.data(), meshA.indices.data(),
+        meshB.positions.size() / 3, meshB.indices.size() / 3, meshB.positions.data(), meshB.indices.data()
+    );
 
-    loadMultipleFiles(files, in_coords, in_tris, in_labels);
+    auto positionsPtr = cmb_positions(result);
+    std::vector<double> resultPositons(positionsPtr, positionsPtr + 3 * cmb_numVertices(result));
 
-    booleanPipeline(in_coords, in_tris, in_labels, op, bool_coords, bool_tris, bool_labels);
+    auto indicesPtr = cmb_indices(result);
+    std::vector<uint> resultIndices(indicesPtr, indicesPtr + 3 * cmb_numTriangles(result));
 
-    cinolib::write_OBJ(file_out.c_str(), bool_coords, bool_tris, {});
+    cinolib::write_OBJ(file_out.c_str(), resultPositons, resultIndices, {});
 
     return 0;
 }

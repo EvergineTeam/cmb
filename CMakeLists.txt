@@ -8,7 +8,6 @@ cmake_minimum_required(VERSION 3.21)
 set(ENABLE_SSE2 True)
 set(ENABLE_AVX2 True)
 
-
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -20,118 +19,58 @@ set(TBB_TEST OFF CACHE BOOL " " FORCE)
 set(TBB_EXAMPLES OFF CACHE BOOL " " FORCE)
 add_subdirectory(arrangements/external/oneTBB)
 
-
-# add the executable
-add_executable(${PROJECT_NAME} main.cpp)
-
-target_include_directories(${PROJECT_NAME} PUBLIC
-    ./
-    code/
-    arrangements/code/
-    arrangements/external/Indirect_Predicates/include/
-)
-
 set(cinolib_DIR ${PROJECT_SOURCE_DIR}/arrangements/external/Cinolib)
 set(CINOLIB_USES_OPENGL_GLFW_IMGUI ON)
 set(CINOLIB_USES_SHEWCHUK_PREDICATES ON)
 
 find_package(cinolib REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} cinolib)
-target_link_libraries(${PROJECT_NAME} tbb)
-target_compile_definitions(${PROJECT_NAME} PUBLIC TBB_PARALLEL=1)
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/arrangements/external/abseil-cpp/)
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/arrangements/external/oneTBB/)
-
-
-add_executable(${PROJECT_NAME}_rotation main-rotation.cpp)
-
-target_include_directories(${PROJECT_NAME}_rotation PUBLIC
-    ./
+add_library(cmb SHARED
+    code/cmb.h code/cmb.cpp
+	code/booleans.h code/booleans.inl
+	code/foctree.h code/foctree.inl
+)
+target_include_directories(cmb PUBLIC
     code/
     arrangements/code/
     arrangements/external/Indirect_Predicates/include/
+	${PROJECT_SOURCE_DIR}/arrangements/external/abseil-cpp/
+	${PROJECT_SOURCE_DIR}/arrangements/external/oneTBB/
 )
+target_link_libraries(cmb cinolib tbb)
+target_compile_definitions(cmb PUBLIC TBB_PARALLEL=1)
 
-target_link_libraries(${PROJECT_NAME}_rotation cinolib)
-target_link_libraries(${PROJECT_NAME}_rotation tbb)
-target_compile_definitions(${PROJECT_NAME}_rotation PUBLIC TBB_PARALLEL=1)
-target_include_directories(${PROJECT_NAME}_rotation PUBLIC ${PROJECT_SOURCE_DIR}/arrangements/external/abseil-cpp/)
-target_include_directories(${PROJECT_NAME}_rotation PUBLIC ${PROJECT_SOURCE_DIR}/arrangements/external/oneTBB/)
-
-add_executable(${PROJECT_NAME}_arap main-arap.cpp)
-
-target_include_directories(${PROJECT_NAME}_arap PUBLIC
-    ./
-    code/
-    arrangements/code/
-    arrangements/external/Indirect_Predicates/include/
-)
-
-target_link_libraries(${PROJECT_NAME}_arap cinolib)
-target_link_libraries(${PROJECT_NAME}_arap tbb)
-target_compile_definitions(${PROJECT_NAME}_arap PUBLIC TBB_PARALLEL=1)
-target_include_directories(${PROJECT_NAME}_arap PUBLIC ${PROJECT_SOURCE_DIR}/arrangements/external/abseil-cpp/)
-target_include_directories(${PROJECT_NAME}_arap PUBLIC ${PROJECT_SOURCE_DIR}/arrangements/external/oneTBB/)
-
-add_executable(${PROJECT_NAME}_stencil main-stencil.cpp)
-
-target_include_directories(${PROJECT_NAME}_stencil PUBLIC
-    ./
-    code/
-    arrangements/code/
-    arrangements/external/Indirect_Predicates/include/
-)
-
-target_link_libraries(${PROJECT_NAME}_stencil cinolib)
-target_link_libraries(${PROJECT_NAME}_stencil tbb)
-target_compile_definitions(${PROJECT_NAME}_stencil PUBLIC TBB_PARALLEL=1)
-target_include_directories(${PROJECT_NAME}_stencil PUBLIC ${PROJECT_SOURCE_DIR}/arrangements/external/abseil-cpp/)
-target_include_directories(${PROJECT_NAME}_stencil PUBLIC ${PROJECT_SOURCE_DIR}/arrangements/external/oneTBB/)
-
-
-add_executable(${PROJECT_NAME}_inputcheck main-inputcheck.cpp)
-
-target_include_directories(${PROJECT_NAME}_inputcheck PUBLIC
-        ./
-        code/
-        arrangements/code/
-        arrangements/external/Indirect_Predicates/include/
-)
-
-target_link_libraries(${PROJECT_NAME}_inputcheck cinolib)
-target_link_libraries(${PROJECT_NAME}_inputcheck tbb)
-target_compile_definitions(${PROJECT_NAME}_inputcheck PUBLIC TBB_PARALLEL=1)
-target_include_directories(${PROJECT_NAME}_inputcheck PUBLIC ${PROJECT_SOURCE_DIR}/arrangements/external/abseil-cpp/)
-target_include_directories(${PROJECT_NAME}_inputcheck PUBLIC ${PROJECT_SOURCE_DIR}/arrangements/external/oneTBB/)
+# add the executable
+add_executable(cmdline main.cpp)
+target_link_libraries(cmdline cmb)
 
 # Compiler-specific options
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         # grant IEEE 754 compliance
-        target_compile_options(${PROJECT_NAME} PUBLIC "/fp:strict")
+        target_compile_options(cmb PUBLIC "/fp:strict")
         # use intrinsic functions
-        target_compile_options(${PROJECT_NAME} PUBLIC "/Oi")
+        target_compile_options(cmb PUBLIC "/Oi")
         # set target architecture
         if(ENABLE_AVX2)
-                target_compile_options(${PROJECT_NAME} PUBLIC "/arch:AVX2")
+                target_compile_options(cmb PUBLIC "/arch:AVX2")
         elseif(ENABLE_SSE2)
-                target_compile_options(${PROJECT_NAME} PUBLIC "/arch:SSE2")
+                target_compile_options(cmb PUBLIC "/arch:SSE2")
         endif()
         # reserve enough stack size
-        target_link_options(${PROJECT_NAME} PUBLIC "/STACK:8421376")
+        target_link_options(cmb PUBLIC "/STACK:8421376")
         # turn off annoying warnings
-        target_compile_options(${PROJECT_NAME} PUBLIC "/D _CRT_SECURE_NO_WARNINGS")
+        target_compile_options(cmb PUBLIC "/D _CRT_SECURE_NO_WARNINGS")
 else()
         # set standard optimization level
-        target_compile_options(${PROJECT_NAME} PUBLIC -O2)
+        target_compile_options(cmb PUBLIC -O2)
         # reserve enough stack size
-        target_compile_options(${PROJECT_NAME} PUBLIC -Wl,-z,stacksize=8421376)
+        target_compile_options(cmb PUBLIC -Wl,-z,stacksize=8421376)
         # grant IEEE 754 compliance
-        target_compile_options(${PROJECT_NAME} PUBLIC -frounding-math)
+        target_compile_options(cmb PUBLIC -frounding-math)
         # set target architecture
         if(ENABLE_AVX2)
-                target_compile_options(${PROJECT_NAME} PUBLIC "-mavx2")
+                target_compile_options(cmb PUBLIC "-mavx2")
         elseif(ENABLE_SSE2)
-                target_compile_options(${PROJECT_NAME} PUBLIC "-msse2")
+                target_compile_options(cmb PUBLIC "-msse2")
         endif()
 endif()
