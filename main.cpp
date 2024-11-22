@@ -56,8 +56,8 @@ int main(int argc, char **argv)
     std::string file_out = argv[4];
 
     auto result = cmb_boolean(op,
-        meshA.positions.size() / 3, meshA.indices.size() / 3, meshA.positions.data(), meshA.indices.data(),
-        meshB.positions.size() / 3, meshB.indices.size() / 3, meshB.positions.data(), meshB.indices.data()
+        { uint32_t(meshA.positions.size() / 3), uint32_t(meshA.indices.size() / 3), meshA.positions.data(), meshA.indices.data() },
+        { uint32_t(meshB.positions.size() / 3), uint32_t(meshB.indices.size() / 3), meshB.positions.data(), meshB.indices.data() }
     );
 
     auto positionsPtr = cmb_positions(result);

@@ -15,11 +15,24 @@ enum cmb_BooleanType {
 	CMB_XOR,
 };
 
+struct cmb_InputMesh {
+	uint32_t numVertices;
+	uint32_t numTriangles;
+	float* positions;
+	uint32_t* indices;
+};
+
+struct cmb_CylinderInfo {
+	float posX, posY, posZ;
+	float dirX, dirY, dirZ;
+	float radius;
+	float halfHeight;
+};
+
 struct cmb_Result;
 
-CMB_API cmb_Result* cmb_boolean(cmb_BooleanType type,
-	uint32_t numVerticesA, uint32_t numTrianglesA, float* positionsA, uint32_t* indicesA,
-	uint32_t numVerticesB, uint32_t numTrianglesB, float* positionsB, uint32_t* indicesB);
+CMB_API cmb_Result* cmb_boolean(cmb_BooleanType type, cmb_InputMesh meshA, cmb_InputMesh meshB);
+CMB_API cmb_Result* cmb_boolean_substract_mesh_cylinders(cmb_InputMesh mesh, uint32_t numCylinders, const cmb_CylinderInfo* cylinders);
 
 CMB_API void cmb_release(cmb_Result* o);
 
