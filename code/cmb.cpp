@@ -74,9 +74,11 @@ static void computeNormals(u32 numVertices, u32 numTriangles, const Vec3f* posit
 		const u32 i2 = indices[3 * triI + 2];
 		const Vec3f& v0 = positions[i0];
 		const Vec3f& v1 = positions[i1];
-		const Vec3f& v2 = positions[i1];
+		const Vec3f& v2 = positions[i2];
 		const Vec3f n = cross(v1 - v0, v2 - v0);
 		normals[i0] += n;
+		normals[i1] += n;
+		normals[i2] += n;
 	}
 
 	for (u32 i = 0; i < numVertices; i++)
