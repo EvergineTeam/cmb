@@ -25,7 +25,7 @@ set(CINOLIB_USES_SHEWCHUK_PREDICATES ON)
 
 find_package(cinolib REQUIRED)
 
-add_library(cmb STATIC
+add_library(cmb SHARED
     code/cmb.h code/cmb.cpp
 	code/booleans.h code/booleans.inl
 	code/foctree.h code/foctree.inl
