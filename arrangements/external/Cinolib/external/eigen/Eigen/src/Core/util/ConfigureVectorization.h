@@ -342,7 +342,9 @@
       #if EIGEN_COMP_ICC >= 1110
         #include <immintrin.h>
       #else
-        #include <mmintrin.h>
+        #if !EMSCRIPTEN
+          #include <mmintrin.h>
+        #endif
         #include <emmintrin.h>
         #include <xmmintrin.h>
         #ifdef  EIGEN_VECTORIZE_SSE3

@@ -46,10 +46,16 @@
 #include "../external/yocto/yocto_parallel.h"
 #include "utils.h"
 
-#include <tbb/tbb.h>
+#if ENABLE_MULTITHREADING
+    #include <tbb/tbb.h>
+#endif
 #include <custom_stack.h>
 
-inline void triangulateSingleTriangle(TriangleSoup &ts, point_arena& arena, FastTrimesh &subm, uint t_id, AuxiliaryStructure &g, std::vector<uint> &new_tris, std::vector< std::bitset<NBIT> > &new_labels, tbb::spin_mutex& mutex)
+inline void triangulateSingleTriangle(TriangleSoup &ts, point_arena& arena, FastTrimesh &subm, uint t_id, AuxiliaryStructure &g, std::vector<uint> &new_tris, std::vector< std::bitset<NBIT> > &new_labels
+#if ENABLE_MULTITHREADING
+    , tbb::spin_mutex& mutex
+#endif
+)
 {
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      *                                  POINTS AND SEGMENTS RECOVERY
@@ -99,7 +105,11 @@ inline void triangulateSingleTriangle(TriangleSoup &ts, point_arena& arena, Fast
      *                           CONSTRAINT SEGMENT INSERTION
      * :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 
-    addConstraintSegmentsInSingleTriangle(ts, arena, subm, g, t_segments, mutex);
+    addConstraintSegmentsInSingleTriangle(ts, arena, subm, g, t_segments
+    #if ENABLE_MULTITHREADING
+        , mutex
+    #endif
+    );
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      *                      POCKETS IN COPLANAR TRIANGLES SOLVING
@@ -108,7 +118,9 @@ inline void triangulateSingleTriangle(TriangleSoup &ts, point_arena& arena, Fast
     if(g.triangleHasCoplanars(t_id))
     {
         { // start critical section...
-            std::lock_guard<tbb::spin_mutex> lock(mutex);
+            #if ENABLE_MULTITHREADING
+                std::lock_guard<tbb::spin_mutex> lock(mutex);
+            #endif
             solvePocketsInCoplanarTriangle(subm, g, new_tris, new_labels, ts.triLabel(t_id));
         } // end critical section
     }
@@ -119,7 +131,9 @@ inline void triangulateSingleTriangle(TriangleSoup &ts, point_arena& arena, Fast
          * :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 
         { // start critical section...
-            std::lock_guard<tbb::spin_mutex> lock(mutex);
+            #if ENABLE_MULTITHREADING
+                std::lock_guard<tbb::spin_mutex> lock(mutex);
+            #endif
             for(uint ti = 0; ti < subm.numTris(); ti++)
             {
                 const uint *tri = subm.tri(ti);
@@ -157,19 +171,23 @@ inline void triangulation(TriangleSoup &ts, point_arena& arena, AuxiliaryStructu
     }
 
     // processing the triangles to split
-    tbb::spin_mutex mutex;
+    #if ENABLE_MULTITHREADING
+        tbb::spin_mutex mutex;
+    #endif
     if(parallel){
-        tbb::parallel_for((uint)0, (uint)tris_to_split.size(), [&](uint t) {
-            //for (uint t=0; t < (uint)tris_to_split.size(); t++) {
-            uint t_id = tris_to_split[t];
-            FastTrimesh subm(ts.triVert(t_id, 0),
-                             ts.triVert(t_id, 1),
-                             ts.triVert(t_id, 2),
-                             ts.tri(t_id),
-                             ts.triPlane(t_id));
+        #if ENABLE_MULTITHREADING
+            tbb::parallel_for((uint)0, (uint)tris_to_split.size(), [&](uint t) {
+                //for (uint t=0; t < (uint)tris_to_split.size(); t++) {
+                uint t_id = tris_to_split[t];
+                FastTrimesh subm(ts.triVert(t_id, 0),
+                                ts.triVert(t_id, 1),
+                                ts.triVert(t_id, 2),
+                                ts.tri(t_id),
+                                ts.triPlane(t_id));
 
-            triangulateSingleTriangle(ts, arena, subm, t_id, g, new_tris, new_labels, mutex);
-        });
+                triangulateSingleTriangle(ts, arena, subm, t_id, g, new_tris, new_labels, mutex);
+            });
+        #endif
     }else{
         for (uint t=0; t < (uint)tris_to_split.size(); t++) {
             uint t_id = tris_to_split[t];
@@ -179,7 +197,7 @@ inline void triangulation(TriangleSoup &ts, point_arena& arena, AuxiliaryStructu
                              ts.tri(t_id),
                              ts.triPlane(t_id));
 
-            triangulateSingleTriangle(ts, arena, subm, t_id, g, new_tris, new_labels, mutex);
+            triangulateSingleTriangle(ts, arena, subm, t_id, g, new_tris, new_labels);
         }
     }
 }
@@ -573,7 +591,11 @@ inline void splitSingleEdge(const TriangleSoup &ts, FastTrimesh &subm, uint v0_i
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-inline void addConstraintSegmentsInSingleTriangle(TriangleSoup &ts, point_arena& arena, FastTrimesh &subm, AuxiliaryStructure &g, auxvector<UIPair> &segment_list, tbb::spin_mutex& mutex)
+inline void addConstraintSegmentsInSingleTriangle(TriangleSoup &ts, point_arena& arena, FastTrimesh &subm, AuxiliaryStructure &g, auxvector<UIPair> &segment_list
+#if ENABLE_MULTITHREADING
+    , tbb::spin_mutex& mutex
+#endif
+)
 {
     int orientation = subm.triOrientation(0);
 
@@ -588,14 +610,22 @@ inline void addConstraintSegmentsInSingleTriangle(TriangleSoup &ts, point_arena&
         uint v0_id = subm.vertNewID(seg.first);
         uint v1_id = subm.vertNewID(seg.second);
 
-        addConstraintSegment(ts, arena, subm, v0_id, v1_id, orientation, g, segment_list, sub_segs_map, mutex);
+        addConstraintSegment(ts, arena, subm, v0_id, v1_id, orientation, g, segment_list, sub_segs_map
+        #if ENABLE_MULTITHREADING
+            , mutex
+        #endif
+        );
     }
 }
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 inline void addConstraintSegment(TriangleSoup &ts, point_arena& arena, FastTrimesh &subm, uint v0_id, uint v1_id, const int orientation,
-                                 AuxiliaryStructure &g, auxvector<UIPair> &segment_list, phmap::flat_hash_map< UIPair, UIPair > &sub_segs_map, tbb::spin_mutex& mutex)
+                                 AuxiliaryStructure &g, auxvector<UIPair> &segment_list, phmap::flat_hash_map< UIPair, UIPair > &sub_segs_map
+#if ENABLE_MULTITHREADING
+    , tbb::spin_mutex& mutex
+#endif
+)
 {
     int e_id = subm.edgeID(v0_id, v1_id);
 
@@ -612,7 +642,11 @@ inline void addConstraintSegment(TriangleSoup &ts, point_arena& arena, FastTrime
     auxvector<uint> intersected_edges;
     auxvector<uint> intersected_tris;
 
-    findIntersectingElements(ts, arena, subm, v_start, v_stop, intersected_edges, intersected_tris, g, segment_list, sub_segs_map, mutex);
+    findIntersectingElements(ts, arena, subm, v_start, v_stop, intersected_edges, intersected_tris, g, segment_list, sub_segs_map
+    #if ENABLE_MULTITHREADING
+        , mutex
+    #endif
+    );
 
     if(intersected_edges.size() == 0) return;
 
@@ -642,14 +676,20 @@ inline void addConstraintSegment(TriangleSoup &ts, point_arena& arena, FastTrime
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastTrimesh &subm, uint v_start, uint v_stop, auxvector<uint> &intersected_edges, auxvector<uint> &intersected_tris,
-                                     AuxiliaryStructure &g, auxvector<UIPair> &segment_list, phmap::flat_hash_map< UIPair, UIPair > &sub_seg_map, tbb::spin_mutex& mutex)
+                                     AuxiliaryStructure &g, auxvector<UIPair> &segment_list, phmap::flat_hash_map< UIPair, UIPair > &sub_seg_map
+#if ENABLE_MULTITHREADING
+    , tbb::spin_mutex& mutex
+#endif
+)
 {
+    printf("findIntersectingElements - start\n");
     uint orig_vstart = subm.vertOrigID(v_start);
     uint orig_vstop  = subm.vertOrigID(v_stop);
 
     // find the edge in link(seed) that intersect {A,B}
     for(uint t_id : subm.adjV2T(v_start))
     {
+        printf("findIntersectingElements - loop iter start\n");
         uint e_id = subm.edgeOppToVert(t_id, v_start);
         uint ev0_id = subm.edgeVertID(e_id, 0);
         uint ev1_id = subm.edgeVertID(e_id, 1);
@@ -661,7 +701,6 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
             intersected_tris.push_back(t_id);
             break;
         }
-
         else if(pointInsideSegment(subm, v_start, v_stop, ev0_id))
         {
             // the original edge (v_start, v_stop) is split in (v_start-v0) - (v0-v_stop) and put in the segment_list to check later
@@ -678,7 +717,6 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
 
             return;
         }
-
         else if(pointInsideSegment(subm, v_start, v_stop, ev1_id))
         {
             // the original edge (v_start, v_stop) is split in (v_start-v1) - (v1-v_stop) and put in the segment_list to check later
@@ -695,10 +733,12 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
 
             return;
         }
+        printf("findIntersectingElements - loop iterend\n");
     }
 
     assert(intersected_edges.size() > 0);
 
+    printf("findIntersectingElements - while start\n");
     // walk along the topology to find the sorted list of edges and tris that intersect {v_start, v_stop}
     while(true)
     {
@@ -750,9 +790,7 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
             }
 
         }
-
-            // e_id is a constraint edge already present in the triangulation
-        else
+        else // // e_id is a constraint edge already present in the triangulation
         {
             // TPI creation (if it doesn't exist)
             uint orig_v0 = subm.vertOrigID(ev0_id);
@@ -761,7 +799,9 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
 
 #pragma omp critical
             { // start critical section...
-                std::lock_guard<tbb::spin_mutex> lock(mutex);
+                #if ENABLE_MULTITHREADING
+                    std::lock_guard<tbb::spin_mutex> lock(mutex);
+                #endif
                 orig_tpi_id = createTPI(ts, arena, subm, std::make_pair(orig_vstart, orig_vstop), std::make_pair(orig_v0, orig_v1), g, sub_seg_map);
             } // end critical section
 

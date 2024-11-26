@@ -74,6 +74,7 @@ inline void mergeDuplicatedVertices(const std::vector<double> &in_coords, const 
 
     if(parallel)
     {
+    #if ENABLE_MULTITHREADING
         using vec3 = std::array<double, 3>;
         auto in_vecs = (vec3*)in_coords.data();
         std::vector<uint> sorted = std::vector<uint>(in_coords.size() / 3);
@@ -100,6 +101,7 @@ inline void mergeDuplicatedVertices(const std::vector<double> &in_coords, const 
         {
             tris[idx] = lookup[in_tris[idx]];
         });
+    #endif
     }
     else
     {

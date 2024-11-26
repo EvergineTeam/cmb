@@ -41,3 +41,4 @@ CMB_API uint32_t cmb_numTriangles(cmb_Result* o);
 CMB_API float* cmb_positions(cmb_Result* o);
 CMB_API float* cmb_normals(cmb_Result* o);
 CMB_API uint32_t* cmb_indices(cmb_Result* o);
+CMB_API void cmb_nothing(int x);

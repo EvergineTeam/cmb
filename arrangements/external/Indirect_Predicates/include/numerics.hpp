@@ -41,21 +41,21 @@
 
 inline void initFPU()
 {
-#ifdef IS64BITPLATFORM
-#ifdef USE_SIMD_INSTRUCTIONS
-//	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
-#endif
+#if defined(IS64BITPLATFORM) || EMSCRIPTEN
+	#ifdef USE_SIMD_INSTRUCTIONS
+	//	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+	#endif
 #else
-#ifdef USE_SIMD_INSTRUCTIONS
-#error "USE_SIMD_INSTRUCTIONS cannot be defined in 32-bit mode"
-#endif
-#ifdef ISVISUALSTUDIO
-	_control87(_PC_53, _MCW_PC); /* Set FPU control word for double precision. */
-#else
-	int cword;
-	cword = 4722;                 /* set FPU control word for double precision */
-	_FPU_SETCW(cword);
-#endif
+	#ifdef USE_SIMD_INSTRUCTIONS
+		#error "USE_SIMD_INSTRUCTIONS cannot be defined in 32-bit mode"
+	#endif
+	#ifdef ISVISUALSTUDIO
+		_control87(_PC_53, _MCW_PC); /* Set FPU control word for double precision. */
+	#else
+		int cword;
+		cword = 4722;                 /* set FPU control word for double precision */
+		_FPU_SETCW(cword);
+	#endif
 #endif
 }
 

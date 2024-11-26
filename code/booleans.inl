@@ -37,7 +37,18 @@
 #include "booleans.h"
 #include "debug.h"
 //#include "io_functions.h"
-#include <tbb/tbb.h>
+
+#if ENABLE_MULTITHREADING
+    #include <tbb/tbb.h>
+    template<typename Fn>
+    void parallelizable_for(uint start, uint end, const Fn& fn) { tbb::parallel_for<uint, Fn>(start, end, fn); }
+#else
+    template<typename Fn>
+    void parallelizable_for(uint start, uint end, const Fn& fn) {
+        for (uint i = start; i < end; i++)
+            fn(i);
+    }
+#endif
 
 inline void customBooleanPipeline(std::vector<genericPoint*>& arr_verts, std::vector<uint>& arr_in_tris,
                                   std::vector<uint>& arr_out_tris, std::vector<std::bitset<NBIT>>& arr_in_labels,
@@ -46,9 +57,9 @@ inline void customBooleanPipeline(std::vector<genericPoint*>& arr_verts, std::ve
                                   const BoolOp &op, std::vector<double> &bool_coords, std::vector<uint> &bool_tris,
                                   std::vector< std::bitset<NBIT>> &bool_labels)
 {
-    FastTrimesh tm(arr_verts, arr_out_tris, true);
+    FastTrimesh tm(arr_verts, arr_out_tris, ENABLE_MULTITHREADING);
 
-    computeAllPatches(tm, labels, patches, true);
+    computeAllPatches(tm, labels, patches, ENABLE_MULTITHREADING);
 
     // the informations about duplicated triangles (removed in arrangements) are restored in the original structures
     addDuplicateTrisInfoInStructures(dupl_triangles, arr_in_tris, arr_in_labels, octree);
@@ -95,8 +106,12 @@ inline void booleanPipeline(const std::vector<double> &in_coords, const std::vec
     std::vector<phmap::flat_hash_set<uint>> patches;
     cinolib::Octree octree; // built with arr_in_tris and arr_in_labels
 
+    bool enableMultithreading = false;
+#if EMSCRIPTEN
+    enableMultithreading = false;
+#endif
     customArrangementPipeline(in_coords, in_tris, in_labels, arr_in_tris, arr_in_labels, arena, arr_verts,
-                              arr_out_tris, labels, octree, dupl_triangles, true);
+                              arr_out_tris, labels, octree, dupl_triangles, enableMultithreading);
 
     customBooleanPipeline(arr_verts, arr_in_tris, arr_out_tris, arr_in_labels, dupl_triangles, labels,
                           patches, octree, op, bool_coords, bool_tris, bool_labels);
@@ -159,7 +174,7 @@ void customRemoveDegenerateAndDuplicatedTriangles(const std::vector<genericPoint
 
         // compute colinear
         auto colinear = vector<bool>(num_orig_tris, false);
-        tbb::parallel_for((uint)0, num_orig_tris, [data_orig_tris, &colinear, &verts](uint t_id) {
+        parallelizable_for((uint)0, num_orig_tris, [data_orig_tris, &colinear, &verts](uint t_id) {
             auto& t = data_orig_tris[t_id];
             colinear[t_id] = cinolib::points_are_colinear_3d(
                 verts[t[0]]->toExplicit3D().ptr(),
@@ -236,9 +251,11 @@ void customRemoveDegenerateAndDuplicatedTriangles(const std::vector<genericPoint
             uint v2_id = tris[(3 * t_id) +2];
             std::bitset<NBIT> l = labels[t_id];
 
-            if(!cinolib::points_are_colinear_3d(verts[v0_id]->toExplicit3D().ptr(),
-                                                verts[v1_id]->toExplicit3D().ptr(),
-                                                verts[v2_id]->toExplicit3D().ptr())) // good triangle
+            const bool pointAreColinear = cinolib::points_are_colinear_3d(verts[v0_id]->toExplicit3D().ptr(),
+                verts[v1_id]->toExplicit3D().ptr(),
+                verts[v2_id]->toExplicit3D().ptr());
+
+            if(!pointAreColinear) // good triangle
             {
                 std::array<uint, 3> tri = {v0_id, v1_id, v2_id};
                 std::sort(tri.begin(), tri.end());
@@ -296,8 +313,10 @@ inline void customDetectIntersections(const TriangleSoup &ts, std::vector<std::p
 
     intersection_list.reserve(ts.numTris());
 
-    tbb::spin_mutex mutex;
-    tbb::parallel_for((uint)0, (uint)o.leaves.size(), [&](uint i)
+    #if ENABLE_MULTITHREADING
+        tbb::spin_mutex mutex;
+    #endif
+    parallelizable_for((uint)0, (uint)o.leaves.size(), [&](uint i)
     {
         auto & leaf = o.leaves[i];
         if(leaf->item_indices.empty()) return;
@@ -314,7 +333,9 @@ inline void customDetectIntersections(const TriangleSoup &ts, std::vector<std::p
                     const cinolib::Triangle *t1 = reinterpret_cast<cinolib::Triangle*>(T1);
                     if(t0->intersects_triangle(t1->v,true)) // precise check (exact if CINOLIB_USES_EXACT_PREDICATES is defined)
                     {
-                        std::lock_guard<tbb::spin_mutex> guard(mutex);
+                        #if ENABLE_MULTITHREADING
+                            std::lock_guard<tbb::spin_mutex> guard(mutex);
+                        #endif
                         intersection_list.push_back(cinolib::unique_pair(tid0,tid1));
                     }
                 }
@@ -593,9 +614,11 @@ inline void computeInsideOut(const FastTrimesh &tm, const std::vector<phmap::fla
                              const std::vector<genericPoint *> &in_verts, const std::vector<uint> &in_tris,
                              const std::vector<std::bitset<NBIT>> &in_labels, const cinolib::vec3d &max_coords, Labels &labels)
 {
-    tbb::spin_mutex mutex;
-    tbb::parallel_for((uint)0, (uint)patches.size(), [&](uint p_id)
-   {
+    #if ENABLE_MULTITHREADING
+        tbb::spin_mutex mutex;
+    #endif
+    parallelizable_for((uint)0, (uint)patches.size(), [&](uint p_id)
+    {
         const phmap::flat_hash_set<uint> &patch_tris = patches[p_id];
         const std::bitset<NBIT> &patch_surface_label = labels.surface[*patch_tris.begin()]; // label of the first triangle of the patch
 

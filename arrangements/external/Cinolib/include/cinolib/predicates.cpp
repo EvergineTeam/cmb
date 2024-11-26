@@ -222,7 +222,7 @@ bool points_are_colinear_2d(const double * p0,
                             const double * p1,
                             const double * p2)
 {
-    return (orient2d(p0,p1,p2)==0);
+    return orient2d(p0,p1,p2) == 0;
 }
 
 

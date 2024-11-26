@@ -964,7 +964,7 @@ inline int dotProductSign2D_EEI_bigfloat(const genericPoint& q, bigfloat px, big
 inline int dotProductSign2D_EEI_exact(const genericPoint& q, double px, double py, double rx, double ry)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double lqx_p[128], *lqx = lqx_p, lqy_p[128], *lqy = lqy_p, dq_p[128], *dq = dq_p;
@@ -1010,7 +1010,7 @@ inline int dotProductSign2D_EEI_exact(const genericPoint& q, double px, double p
    if (pxq_p != pxq) FreeDoubles(pxq);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = dotProductSign2D_EEI_bigfloat(q, px, py, rx, ry);
 #endif
 
@@ -1071,7 +1071,7 @@ inline int dotProductSign2D_IEE_bigfloat(const genericPoint& p, bigfloat rx, big
 inline int dotProductSign2D_IEE_exact(const genericPoint& p, double rx, double ry, double qx, double qy)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double lpx_p[128], *lpx = lpx_p, lpy_p[128], *lpy = lpy_p, dp_p[128], *dp = dp_p;
@@ -1109,7 +1109,7 @@ inline int dotProductSign2D_IEE_exact(const genericPoint& p, double rx, double r
    if (qxd_p != qxd) FreeDoubles(qxd);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = dotProductSign2D_IEE_bigfloat(p, rx, ry, qx, qy);
 #endif
 
@@ -1182,7 +1182,7 @@ inline int dotProductSign2D_IEI_bigfloat(const genericPoint& p, const genericPoi
 inline int dotProductSign2D_IEI_exact(const genericPoint& p, const genericPoint& q, double rx, double ry)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double lpx_p[64], *lpx = lpx_p, lpy_p[64], *lpy = lpy_p, dp_p[64], *dp = dp_p, lqx_p[64], *lqx = lqx_p, lqy_p[64], *lqy = lqy_p, dq_p[64], *dq = dq_p;
@@ -1238,7 +1238,7 @@ inline int dotProductSign2D_IEI_exact(const genericPoint& p, const genericPoint&
    if (dqp_p != dqp) FreeDoubles(dqp);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = dotProductSign2D_IEI_bigfloat(p, q, rx, ry);
 #endif
 
@@ -1311,7 +1311,7 @@ inline int dotProductSign2D_IIE_bigfloat(const genericPoint& p, const genericPoi
 inline int dotProductSign2D_IIE_exact(const genericPoint& p, const genericPoint& r, double qx, double qy)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double lpx_p[64], *lpx = lpx_p, lpy_p[64], *lpy = lpy_p, dp_p[64], *dp = dp_p, lrx_p[64], *lrx = lrx_p, lry_p[64], *lry = lry_p, dr_p[64], *dr = dr_p;
@@ -1358,7 +1358,7 @@ inline int dotProductSign2D_IIE_exact(const genericPoint& p, const genericPoint&
    if (qxd_p != qxd) FreeDoubles(qxd);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = dotProductSign2D_IIE_bigfloat(p, r, qx, qy);
 #endif
 
@@ -1441,7 +1441,7 @@ inline int dotProductSign2D_III_bigfloat(const genericPoint& p, const genericPoi
 inline int dotProductSign2D_III_exact(const genericPoint& p, const genericPoint& r, const genericPoint& q)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double lpx_p[64], *lpx = lpx_p, lpy_p[64], *lpy = lpy_p, dp_p[64], *dp = dp_p, lrx_p[64], *lrx = lrx_p, lry_p[64], *lry = lry_p, dr_p[64], *dr = dr_p, lqx_p[64], *lqx = lqx_p, lqy_p[64], *lqy = lqy_p, dq_p[64], *dq = dq_p;
@@ -1501,7 +1501,7 @@ inline int dotProductSign2D_III_exact(const genericPoint& p, const genericPoint&
    if (qxd_p != qxd) FreeDoubles(qxd);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = dotProductSign2D_III_bigfloat(p, r, q);
 #endif
 
@@ -1587,7 +1587,7 @@ inline int dotProductSign3D_EEI_bigfloat(const genericPoint& q, bigfloat px, big
 inline int dotProductSign3D_EEI_exact(const genericPoint& q, double px, double py, double pz, double rx, double ry, double rz)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double lqx_p[64], *lqx = lqx_p, lqy_p[64], *lqy = lqy_p, lqz_p[64], *lqz = lqz_p, dq_p[64], *dq = dq_p;
@@ -1651,7 +1651,7 @@ inline int dotProductSign3D_EEI_exact(const genericPoint& q, double px, double p
    if (pxq_p != pxq) FreeDoubles(pxq);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = dotProductSign3D_EEI_bigfloat(q, px, py, pz, rx, ry, rz);
 #endif
 
@@ -1726,7 +1726,7 @@ inline int dotProductSign3D_IEE_bigfloat(const genericPoint& p, bigfloat rx, big
 inline int dotProductSign3D_IEE_exact(const genericPoint& p, double rx, double ry, double rz, double qx, double qy, double qz)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double lpx_p[128], *lpx = lpx_p, lpy_p[128], *lpy = lpy_p, lpz_p[128], *lpz = lpz_p, dp_p[128], *dp = dp_p;
@@ -1778,7 +1778,7 @@ inline int dotProductSign3D_IEE_exact(const genericPoint& p, double rx, double r
    if (qxd_p != qxd) FreeDoubles(qxd);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = dotProductSign3D_IEE_bigfloat(p, rx, ry, rz, qx, qy, qz);
 #endif
 
@@ -1865,7 +1865,7 @@ inline int dotProductSign3D_IEI_bigfloat(const genericPoint& p, const genericPoi
 inline int dotProductSign3D_IEI_exact(const genericPoint& p, const genericPoint& q, double rx, double ry, double rz)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double lpx_p[64], *lpx = lpx_p, lpy_p[64], *lpy = lpy_p, lpz_p[64], *lpz = lpz_p, dp_p[64], *dp = dp_p, lqx_p[64], *lqx = lqx_p, lqy_p[64], *lqy = lqy_p, lqz_p[64], *lqz = lqz_p, dq_p[64], *dq = dq_p;
@@ -1942,7 +1942,7 @@ inline int dotProductSign3D_IEI_exact(const genericPoint& p, const genericPoint&
    if (dqp_p != dqp) FreeDoubles(dqp);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = dotProductSign3D_IEI_bigfloat(p, q, rx, ry, rz);
 #endif
 
@@ -2029,7 +2029,7 @@ inline int dotProductSign3D_IIE_bigfloat(const genericPoint& p, const genericPoi
 inline int dotProductSign3D_IIE_exact(const genericPoint& p, const genericPoint& r, double qx, double qy, double qz)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double lpx_p[64], *lpx = lpx_p, lpy_p[64], *lpy = lpy_p, lpz_p[64], *lpz = lpz_p, dp_p[64], *dp = dp_p, lrx_p[64], *lrx = lrx_p, lry_p[64], *lry = lry_p, lrz_p[64], *lrz = lrz_p, dr_p[64], *dr = dr_p;
@@ -2094,7 +2094,7 @@ inline int dotProductSign3D_IIE_exact(const genericPoint& p, const genericPoint&
    if (qxd_p != qxd) FreeDoubles(qxd);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = dotProductSign3D_IIE_bigfloat(p, r, qx, qy, qz);
 #endif
 
@@ -2195,7 +2195,7 @@ inline int dotProductSign3D_III_bigfloat(const genericPoint& p, const genericPoi
 inline int dotProductSign3D_III_exact(const genericPoint& p, const genericPoint& r, const genericPoint& q)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double lpx_p[32], *lpx = lpx_p, lpy_p[32], *lpy = lpy_p, lpz_p[32], *lpz = lpz_p, dp_p[32], *dp = dp_p, lrx_p[32], *lrx = lrx_p, lry_p[32], *lry = lry_p, lrz_p[32], *lrz = lrz_p, dr_p[32], *dr = dr_p, lqx_p[32], *lqx = lqx_p, lqy_p[32], *lqy = lqy_p, lqz_p[32], *lqz = lqz_p, dq_p[32], *dq = dq_p;
@@ -2279,7 +2279,7 @@ inline int dotProductSign3D_III_exact(const genericPoint& p, const genericPoint&
    if (qxd_p != qxd) FreeDoubles(qxd);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = dotProductSign3D_III_bigfloat(p, r, q);
 #endif
 
@@ -2400,7 +2400,7 @@ inline int incirclexy_indirect_IEEE_bigfloat(const genericPoint& p1, bigfloat pb
 inline int incirclexy_indirect_IEEE_exact(const genericPoint& p1, double pbx, double pby, double pcx, double pcy, double pdx, double pdy)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)CHECK_FOR_XYZERFLOWS
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[64], *l1x = l1x_p, l1y_p[64], *l1y = l1y_p, l1z_p[64], *l1z = l1z_p, d1_p[64], *d1 = d1_p;
@@ -2499,7 +2499,7 @@ inline int incirclexy_indirect_IEEE_exact(const genericPoint& p1, double pbx, do
    if (pdxt_p != pdxt) FreeDoubles(pdxt);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = incirclexy_indirect_IEEE_bigfloat(p1, pbx, pby, pcx, pcy, pdx, pdy);
 #endif
 
@@ -2737,7 +2737,7 @@ inline int incirclexy_indirect_IIEE_exact(const genericPoint& p1, const genericP
    if (pdx1_p != pdx1) FreeDoubles(pdx1);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = incirclexy_indirect_IIEE_bigfloat(p1, p2, pcx, pcy, pdx, pdy);
 #endif
 
@@ -3007,7 +3007,7 @@ inline int incirclexy_indirect_IIIE_exact(const genericPoint& p1, const genericP
    if (pdx1_p != pdx1) FreeDoubles(pdx1);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = incirclexy_indirect_IIIE_bigfloat(p1, p2, p3, pdx, pdy);
 #endif
 
@@ -3314,7 +3314,7 @@ inline int incirclexy_indirect_IIII_exact(const genericPoint& p1, const genericP
    if (l1xt_p != l1xt) FreeDoubles(l1xt);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = incirclexy_indirect_IIII_bigfloat(p1, p2, p3, p4);
 #endif
 
@@ -3538,7 +3538,7 @@ inline int incircle_indirect_IEEE_exact(const genericPoint& p1, double pbx, doub
    if (pdxt_p != pdxt) FreeDoubles(pdxt);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = incircle_indirect_IEEE_bigfloat(p1, pbx, pby, pcx, pcy, pdx, pdy);
 #endif
 
@@ -3775,7 +3775,7 @@ inline int incircle_indirect_IIEE_exact(const genericPoint& p1, const genericPoi
    if (pdx1_p != pdx1) FreeDoubles(pdx1);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = incircle_indirect_IIEE_bigfloat(p1, p2, pcx, pcy, pdx, pdy);
 #endif
 
@@ -4043,7 +4043,7 @@ inline int incircle_indirect_IIIE_exact(const genericPoint& p1, const genericPoi
    if (pdx1_p != pdx1) FreeDoubles(pdx1);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = incircle_indirect_IIIE_bigfloat(p1, p2, p3, pdx, pdy);
 #endif
 
@@ -4347,7 +4347,7 @@ inline int incircle_indirect_IIII_exact(const genericPoint& p1, const genericPoi
    if (l1xt_p != l1xt) FreeDoubles(l1xt);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = incircle_indirect_IIII_bigfloat(p1, p2, p3, p4);
 #endif
 
@@ -4795,7 +4795,7 @@ inline int inSphere_IEEEE_exact(const genericPoint& p1, double pbx, double pby, 
    if (pexd_p != pexd) FreeDoubles(pexd);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = inSphere_IEEEE_bigfloat(p1, pbx, pby, pbz, pcx, pcy, pcz, pdx, pdy, pdz, pex, pey, pez);
 #endif
 
@@ -5276,7 +5276,7 @@ inline int inSphere_IIEEE_exact(const genericPoint& p1, const genericPoint& p2, 
    if (pexd_p != pexd) FreeDoubles(pexd);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = inSphere_IIEEE_bigfloat(p1, p2, pcx, pcy, pcz, pdx, pdy, pdz, pex, pey, pez);
 #endif
 
@@ -5799,7 +5799,7 @@ inline int inSphere_IIIEE_exact(const genericPoint& p1, const genericPoint& p2, 
    if (pexd_p != pexd) FreeDoubles(pexd);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = inSphere_IIIEE_bigfloat(p1, p2, p3, pdx, pdy, pdz, pex, pey, pez);
 #endif
 
@@ -6361,7 +6361,7 @@ inline int inSphere_IIIIE_exact(const genericPoint& p1, const genericPoint& p2, 
    if (pexd_p != pexd) FreeDoubles(pexd);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = inSphere_IIIIE_bigfloat(p1, p2, p3, p4, pex, pey, pez);
 #endif
 
@@ -6646,7 +6646,7 @@ inline int inSphere_IIIII_bigfloat(const genericPoint& p1, const genericPoint& p
 inline int inSphere_IIIII_exact(const genericPoint& p1, const genericPoint& p2, const genericPoint& p3, const genericPoint& p4, const genericPoint& p5)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[8], *l1x = l1x_p, l1y_p[8], *l1y = l1y_p, l1z_p[8], *l1z = l1z_p, d1_p[8], *d1 = d1_p, l2x_p[8], *l2x = l2x_p, l2y_p[8], *l2y = l2y_p, l2z_p[8], *l2z = l2z_p, d2_p[8], *d2 = d2_p, l3x_p[8], *l3x = l3x_p, l3y_p[8], *l3y = l3y_p, l3z_p[8], *l3z = l3z_p, d3_p[8], *d3 = d3_p, l4x_p[8], *l4x = l4x_p, l4y_p[8], *l4y = l4y_p, l4z_p[8], *l4z = l4z_p, d4_p[8], *d4 = d4_p, l5x_p[8], *l5x = l5x_p, l5y_p[8], *l5y = l5y_p, l5z_p[8], *l5z = l5z_p, d5_p[8], *d5 = d5_p;
@@ -6990,7 +6990,7 @@ inline int inSphere_IIIII_exact(const genericPoint& p1, const genericPoint& p2, 
    if (pexd_p != pexd) FreeDoubles(pexd);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = inSphere_IIIII_bigfloat(p1, p2, p3, p4, p5);
 #endif
 
@@ -7889,7 +7889,7 @@ inline int lessThanOnX_IE_bigfloat(const genericPoint& p1, bigfloat bx)
 inline int lessThanOnX_IE_exact(const genericPoint& p1, double bx)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[128], *l1x = l1x_p, l1y_p[128], *l1y = l1y_p, l1z_p[128], *l1z = l1z_p, d1_p[128], *d1 = d1_p;
@@ -7908,7 +7908,7 @@ inline int lessThanOnX_IE_exact(const genericPoint& p1, double bx)
    if (dbx_p != dbx) FreeDoubles(dbx);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = lessThanOnX_IE_bigfloat(p1, bx);
 #endif
 
@@ -7959,7 +7959,7 @@ inline int lessThanOnX_II_bigfloat(const genericPoint& p1, const genericPoint& p
 inline int lessThanOnX_II_exact(const genericPoint& p1, const genericPoint& p2)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[128], *l1x = l1x_p, l1y_p[128], *l1y = l1y_p, l1z_p[128], *l1z = l1z_p, d1_p[128], *d1 = d1_p, l2x_p[128], *l2x = l2x_p, l2y_p[128], *l2y = l2y_p, l2z_p[128], *l2z = l2z_p, d2_p[128], *d2 = d2_p;
@@ -7982,7 +7982,7 @@ inline int lessThanOnX_II_exact(const genericPoint& p1, const genericPoint& p2)
    if (k1_p != k1) FreeDoubles(k1);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = lessThanOnX_II_bigfloat(p1, p2);
 #endif
 
@@ -8029,7 +8029,7 @@ inline int lessThanOnY_IE_bigfloat(const genericPoint& p1, bigfloat by)
 inline int lessThanOnY_IE_exact(const genericPoint& p1, double by)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[128], *l1x = l1x_p, l1y_p[128], *l1y = l1y_p, l1z_p[128], *l1z = l1z_p, d1_p[128], *d1 = d1_p;
@@ -8048,7 +8048,7 @@ inline int lessThanOnY_IE_exact(const genericPoint& p1, double by)
    if (dby_p != dby) FreeDoubles(dby);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = lessThanOnY_IE_bigfloat(p1, by);
 #endif
 
@@ -8099,7 +8099,7 @@ inline int lessThanOnY_II_bigfloat(const genericPoint& p1, const genericPoint& p
 inline int lessThanOnY_II_exact(const genericPoint& p1, const genericPoint& p2)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[128], *l1x = l1x_p, l1y_p[128], *l1y = l1y_p, l1z_p[128], *l1z = l1z_p, d1_p[128], *d1 = d1_p, l2x_p[128], *l2x = l2x_p, l2y_p[128], *l2y = l2y_p, l2z_p[128], *l2z = l2z_p, d2_p[128], *d2 = d2_p;
@@ -8122,7 +8122,7 @@ inline int lessThanOnY_II_exact(const genericPoint& p1, const genericPoint& p2)
    if (k1_p != k1) FreeDoubles(k1);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = lessThanOnY_II_bigfloat(p1, p2);
 #endif
 
@@ -8169,7 +8169,7 @@ inline int lessThanOnZ_IE_bigfloat(const genericPoint& p1, bigfloat bz)
 inline int lessThanOnZ_IE_exact(const genericPoint& p1, double bz)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[128], *l1x = l1x_p, l1y_p[128], *l1y = l1y_p, l1z_p[128], *l1z = l1z_p, d1_p[128], *d1 = d1_p;
@@ -8188,7 +8188,7 @@ inline int lessThanOnZ_IE_exact(const genericPoint& p1, double bz)
    if (dbz_p != dbz) FreeDoubles(dbz);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = lessThanOnZ_IE_bigfloat(p1, bz);
 #endif
 
@@ -8239,7 +8239,7 @@ inline int lessThanOnZ_II_bigfloat(const genericPoint& p1, const genericPoint& p
 inline int lessThanOnZ_II_exact(const genericPoint& p1, const genericPoint& p2)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[128], *l1x = l1x_p, l1y_p[128], *l1y = l1y_p, l1z_p[128], *l1z = l1z_p, d1_p[128], *d1 = d1_p, l2x_p[128], *l2x = l2x_p, l2y_p[128], *l2y = l2y_p, l2z_p[128], *l2z = l2z_p, d2_p[128], *d2 = d2_p;
@@ -8262,7 +8262,7 @@ inline int lessThanOnZ_II_exact(const genericPoint& p1, const genericPoint& p2)
    if (k1_p != k1) FreeDoubles(k1);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = lessThanOnZ_II_bigfloat(p1, p2);
 #endif
 
@@ -8325,7 +8325,7 @@ inline int orient2dxy_indirect_IEE_bigfloat(const genericPoint& p1, bigfloat p2x
 inline int orient2dxy_indirect_IEE_exact(const genericPoint& p1, double p2x, double p2y, double p3x, double p3y)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[128], *l1x = l1x_p, l1y_p[128], *l1y = l1y_p, l1z_p[128], *l1z = l1z_p, d1_p[128], *d1 = d1_p;
@@ -8363,7 +8363,7 @@ inline int orient2dxy_indirect_IEE_exact(const genericPoint& p1, double p2x, dou
    if (e2_p != e2) FreeDoubles(e2);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient2dxy_indirect_IEE_bigfloat(p1, p2x, p2y, p3x, p3y);
 #endif
 
@@ -8434,7 +8434,7 @@ inline int orient2dxy_indirect_IIE_bigfloat(const genericPoint& p1, const generi
 inline int orient2dxy_indirect_IIE_exact(const genericPoint& p1, const genericPoint& p2, double op3x, double op3y)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[64], *l1x = l1x_p, l1y_p[64], *l1y = l1y_p, l1z_p[64], *l1z = l1z_p, d1_p[64], *d1 = d1_p, l2x_p[64], *l2x = l2x_p, l2y_p[64], *l2y = l2y_p, l2z_p[64], *l2z = l2z_p, d2_p[64], *d2 = d2_p;
@@ -8487,7 +8487,7 @@ inline int orient2dxy_indirect_IIE_exact(const genericPoint& p1, const genericPo
    if (a_p != a) FreeDoubles(a);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient2dxy_indirect_IIE_bigfloat(p1, p2, op3x, op3y);
 #endif
 
@@ -8572,7 +8572,7 @@ inline int orient2dxy_indirect_III_bigfloat(const genericPoint& p1, const generi
 inline int orient2dxy_indirect_III_exact(const genericPoint& p1, const genericPoint& p2, const genericPoint& p3)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[64], *l1x = l1x_p, l1y_p[64], *l1y = l1y_p, l1z_p[64], *l1z = l1z_p, d1_p[64], *d1 = d1_p, l2x_p[64], *l2x = l2x_p, l2y_p[64], *l2y = l2y_p, l2z_p[64], *l2z = l2z_p, d2_p[64], *d2 = d2_p, l3x_p[64], *l3x = l3x_p, l3y_p[64], *l3y = l3y_p, l3z_p[64], *l3z = l3z_p, d3_p[64], *d3 = d3_p;
@@ -8632,7 +8632,7 @@ inline int orient2dxy_indirect_III_exact(const genericPoint& p1, const genericPo
    if (a_p != a) FreeDoubles(a);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient2dxy_indirect_III_bigfloat(p1, p2, p3);
 #endif
 
@@ -8707,7 +8707,7 @@ inline int orient2dyz_indirect_IEE_bigfloat(const genericPoint& p1, bigfloat p2x
 inline int orient2dyz_indirect_IEE_exact(const genericPoint& p1, double p2x, double p2y, double p3x, double p3y)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1z_p[128], *l1z = l1z_p, l1x_p[128], *l1x = l1x_p, l1y_p[128], *l1y = l1y_p, d1_p[128], *d1 = d1_p;
@@ -8745,7 +8745,7 @@ inline int orient2dyz_indirect_IEE_exact(const genericPoint& p1, double p2x, dou
    if (e2_p != e2) FreeDoubles(e2);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient2dyz_indirect_IEE_bigfloat(p1, p2x, p2y, p3x, p3y);
 #endif
 
@@ -8816,7 +8816,7 @@ inline int orient2dyz_indirect_IIE_bigfloat(const genericPoint& p1, const generi
 inline int orient2dyz_indirect_IIE_exact(const genericPoint& p1, const genericPoint& p2, double op3x, double op3y)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1z_p[64], *l1z = l1z_p, l1x_p[64], *l1x = l1x_p, l1y_p[64], *l1y = l1y_p, d1_p[64], *d1 = d1_p, l2z_p[64], *l2z = l2z_p, l2x_p[64], *l2x = l2x_p, l2y_p[64], *l2y = l2y_p, d2_p[64], *d2 = d2_p;
@@ -8869,7 +8869,7 @@ inline int orient2dyz_indirect_IIE_exact(const genericPoint& p1, const genericPo
    if (a_p != a) FreeDoubles(a);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient2dyz_indirect_IIE_bigfloat(p1, p2, op3x, op3y);
 #endif
 
@@ -8954,7 +8954,7 @@ inline int orient2dyz_indirect_III_bigfloat(const genericPoint& p1, const generi
 inline int orient2dyz_indirect_III_exact(const genericPoint& p1, const genericPoint& p2, const genericPoint& p3)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1z_p[64], *l1z = l1z_p, l1x_p[64], *l1x = l1x_p, l1y_p[64], *l1y = l1y_p, d1_p[64], *d1 = d1_p, l2z_p[64], *l2z = l2z_p, l2x_p[64], *l2x = l2x_p, l2y_p[64], *l2y = l2y_p, d2_p[64], *d2 = d2_p, l3z_p[64], *l3z = l3z_p, l3x_p[64], *l3x = l3x_p, l3y_p[64], *l3y = l3y_p, d3_p[64], *d3 = d3_p;
@@ -9014,7 +9014,7 @@ inline int orient2dyz_indirect_III_exact(const genericPoint& p1, const genericPo
    if (a_p != a) FreeDoubles(a);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient2dyz_indirect_III_bigfloat(p1, p2, p3);
 #endif
 
@@ -9089,7 +9089,7 @@ inline int orient2dzx_indirect_IEE_bigfloat(const genericPoint& p1, bigfloat p2x
 inline int orient2dzx_indirect_IEE_exact(const genericPoint& p1, double p2x, double p2y, double p3x, double p3y)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1y_p[128], *l1y = l1y_p, l1z_p[128], *l1z = l1z_p, l1x_p[128], *l1x = l1x_p, d1_p[128], *d1 = d1_p;
@@ -9127,7 +9127,7 @@ inline int orient2dzx_indirect_IEE_exact(const genericPoint& p1, double p2x, dou
    if (e2_p != e2) FreeDoubles(e2);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient2dzx_indirect_IEE_bigfloat(p1, p2x, p2y, p3x, p3y);
 #endif
 
@@ -9198,7 +9198,7 @@ inline int orient2dzx_indirect_IIE_bigfloat(const genericPoint& p1, const generi
 inline int orient2dzx_indirect_IIE_exact(const genericPoint& p1, const genericPoint& p2, double op3x, double op3y)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1y_p[64], *l1y = l1y_p, l1z_p[64], *l1z = l1z_p, l1x_p[64], *l1x = l1x_p, d1_p[64], *d1 = d1_p, l2y_p[64], *l2y = l2y_p, l2z_p[64], *l2z = l2z_p, l2x_p[64], *l2x = l2x_p, d2_p[64], *d2 = d2_p;
@@ -9251,7 +9251,7 @@ inline int orient2dzx_indirect_IIE_exact(const genericPoint& p1, const genericPo
    if (a_p != a) FreeDoubles(a);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient2dzx_indirect_IIE_bigfloat(p1, p2, op3x, op3y);
 #endif
 
@@ -9336,7 +9336,7 @@ inline int orient2dzx_indirect_III_bigfloat(const genericPoint& p1, const generi
 inline int orient2dzx_indirect_III_exact(const genericPoint& p1, const genericPoint& p2, const genericPoint& p3)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1y_p[64], *l1y = l1y_p, l1z_p[64], *l1z = l1z_p, l1x_p[64], *l1x = l1x_p, d1_p[64], *d1 = d1_p, l2y_p[64], *l2y = l2y_p, l2z_p[64], *l2z = l2z_p, l2x_p[64], *l2x = l2x_p, d2_p[64], *d2 = d2_p, l3y_p[64], *l3y = l3y_p, l3z_p[64], *l3z = l3z_p, l3x_p[64], *l3x = l3x_p, d3_p[64], *d3 = d3_p;
@@ -9396,7 +9396,7 @@ inline int orient2dzx_indirect_III_exact(const genericPoint& p1, const genericPo
    if (a_p != a) FreeDoubles(a);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient2dzx_indirect_III_bigfloat(p1, p2, p3);
 #endif
 
@@ -9471,7 +9471,7 @@ inline int orient2d_indirect_IEE_bigfloat(const genericPoint& p1, bigfloat p2x, 
 inline int orient2d_indirect_IEE_exact(const genericPoint& p1, double p2x, double p2y, double p3x, double p3y)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[128], *l1x = l1x_p, l1y_p[128], *l1y = l1y_p, d1_p[128], *d1 = d1_p;
@@ -9509,7 +9509,7 @@ inline int orient2d_indirect_IEE_exact(const genericPoint& p1, double p2x, doubl
    if (e2_p != e2) FreeDoubles(e2);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient2d_indirect_IEE_bigfloat(p1, p2x, p2y, p3x, p3y);
 #endif
 
@@ -9580,7 +9580,7 @@ inline int orient2d_indirect_IIE_bigfloat(const genericPoint& p1, const genericP
 inline int orient2d_indirect_IIE_exact(const genericPoint& p1, const genericPoint& p2, double p3x, double p3y)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[64], *l1x = l1x_p, l1y_p[64], *l1y = l1y_p, d1_p[64], *d1 = d1_p, l2x_p[64], *l2x = l2x_p, l2y_p[64], *l2y = l2y_p, d2_p[64], *d2 = d2_p;
@@ -9633,7 +9633,7 @@ inline int orient2d_indirect_IIE_exact(const genericPoint& p1, const genericPoin
    if (a_p != a) FreeDoubles(a);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient2d_indirect_IIE_bigfloat(p1, p2, p3x, p3y);
 #endif
 
@@ -9716,7 +9716,7 @@ inline int orient2d_indirect_III_bigfloat(const genericPoint& p1, const genericP
 inline int orient2d_indirect_III_exact(const genericPoint& p1, const genericPoint& p2, const genericPoint& p3)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[64], *l1x = l1x_p, l1y_p[64], *l1y = l1y_p, d1_p[64], *d1 = d1_p, l2x_p[64], *l2x = l2x_p, l2y_p[64], *l2y = l2y_p, d2_p[64], *d2 = d2_p, l3x_p[64], *l3x = l3x_p, l3y_p[64], *l3y = l3y_p, d3_p[64], *d3 = d3_p;
@@ -9776,7 +9776,7 @@ inline int orient2d_indirect_III_exact(const genericPoint& p1, const genericPoin
    if (a_p != a) FreeDoubles(a);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient2d_indirect_III_bigfloat(p1, p2, p3);
 #endif
 
@@ -9880,7 +9880,7 @@ inline int orient3d_indirect_IEEE_bigfloat(const genericPoint& p1, bigfloat ax, 
 inline int orient3d_indirect_IEEE_exact(const genericPoint& p1, double ax, double ay, double az, double bx, double by, double bz, double cx, double cy, double cz)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[64], *l1x = l1x_p, l1y_p[64], *l1y = l1y_p, l1z_p[64], *l1z = l1z_p, d1_p[64], *d1 = d1_p;
@@ -9965,7 +9965,7 @@ inline int orient3d_indirect_IEEE_exact(const genericPoint& p1, double ax, doubl
    if (dcx_p != dcx) FreeDoubles(dcx);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient3d_indirect_IEEE_bigfloat(p1, ax, ay, az, bx, by, bz, cx, cy, cz);
 #endif
 
@@ -10072,7 +10072,7 @@ inline int orient3d_indirect_IIEE_bigfloat(const genericPoint& p1, const generic
 inline int orient3d_indirect_IIEE_exact(const genericPoint& p1, const genericPoint& p2, double p3x, double p3y, double p3z, double p4x, double p4y, double p4z)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[32], *l1x = l1x_p, l1y_p[32], *l1y = l1y_p, l1z_p[32], *l1z = l1z_p, d1_p[32], *d1 = d1_p, l2x_p[32], *l2x = l2x_p, l2y_p[32], *l2y = l2y_p, l2z_p[32], *l2z = l2z_p, d2_p[32], *d2 = d2_p;
@@ -10170,7 +10170,7 @@ inline int orient3d_indirect_IIEE_exact(const genericPoint& p1, const genericPoi
    if (d1p4x_p != d1p4x) FreeDoubles(d1p4x);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient3d_indirect_IIEE_bigfloat(p1, p2, p3x, p3y, p3z, p4x, p4y, p4z);
 #endif
 
@@ -10289,7 +10289,7 @@ inline int orient3d_indirect_IIIE_bigfloat(const genericPoint& p1, const generic
 inline int orient3d_indirect_IIIE_exact(const genericPoint& p1, const genericPoint& p2, const genericPoint& p3, double p4x, double p4y, double p4z)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[32], *l1x = l1x_p, l1y_p[32], *l1y = l1y_p, l1z_p[32], *l1z = l1z_p, d1_p[32], *d1 = d1_p, l2x_p[32], *l2x = l2x_p, l2y_p[32], *l2y = l2y_p, l2z_p[32], *l2z = l2z_p, d2_p[32], *d2 = d2_p, l3x_p[32], *l3x = l3x_p, l3y_p[32], *l3y = l3y_p, l3z_p[32], *l3z = l3z_p, d3_p[32], *d3 = d3_p;
@@ -10400,7 +10400,7 @@ inline int orient3d_indirect_IIIE_exact(const genericPoint& p1, const genericPoi
    if (d1p4x_p != d1p4x) FreeDoubles(d1p4x);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient3d_indirect_IIIE_bigfloat(p1, p2, p3, p4x, p4y, p4z);
 #endif
 
@@ -10543,7 +10543,7 @@ inline int orient3d_indirect_IIII_bigfloat(const genericPoint& p1, const generic
 inline int orient3d_indirect_IIII_exact(const genericPoint& p1, const genericPoint& p2, const genericPoint& p3, const genericPoint& p4)
 {
  double return_value = NAN;
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) && defined(FE_ALL_EXCEPT)
    feclearexcept(FE_ALL_EXCEPT);
 #endif
  double l1x_p[32], *l1x = l1x_p, l1y_p[32], *l1y = l1y_p, l1z_p[32], *l1z = l1z_p, d1_p[32], *d1 = d1_p, l2x_p[32], *l2x = l2x_p, l2y_p[32], *l2y = l2y_p, l2z_p[32], *l2z = l2z_p, d2_p[32], *d2 = d2_p, l3x_p[32], *l3x = l3x_p, l3y_p[32], *l3y = l3y_p, l3z_p[32], *l3z = l3z_p, d3_p[32], *d3 = d3_p, l4x_p[32], *l4x = l4x_p, l4y_p[32], *l4y = l4y_p, l4z_p[32], *l4z = l4z_p, d4_p[32], *d4 = d4_p;
@@ -10682,7 +10682,7 @@ inline int orient3d_indirect_IIII_exact(const genericPoint& p1, const genericPoi
    if (d1p4x_p != d1p4x) FreeDoubles(d1p4x);
  }
 
-#ifdef CHECK_FOR_XYZERFLOWS
+#if defined(CHECK_FOR_XYZERFLOWS) &&  defined(FE_UNDERFLOW) &&  defined(FE_OVERFLOW)
    if (fetestexcept(FE_UNDERFLOW | FE_OVERFLOW)) return_value = orient3d_indirect_IIII_bigfloat(p1, p2, p3, p4);
 #endif
 

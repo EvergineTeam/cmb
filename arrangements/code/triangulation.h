@@ -81,13 +81,25 @@ inline const Node &innerFindContainingTriangleInTree(const Tree &tree, uint root
 
 inline void splitSingleEdge(const TriangleSoup &ts, FastTrimesh &subm, uint v0_id, uint v1_id, auxvector<uint> &points);
 
-inline void addConstraintSegmentsInSingleTriangle(TriangleSoup &ts, point_arena& arena, FastTrimesh &subm, AuxiliaryStructure &g, auxvector<UIPair> &segment_list, tbb::spin_mutex& mutex);
+inline void addConstraintSegmentsInSingleTriangle(TriangleSoup &ts, point_arena& arena, FastTrimesh &subm, AuxiliaryStructure &g, auxvector<UIPair> &segment_list
+#if ENABLE_MULTITHREADING
+    , tbb::spin_mutex& mutex
+#endif
+);
 
 inline void addConstraintSegment(TriangleSoup &ts, point_arena& arena, FastTrimesh &subm, uint v0_id, uint v1_id, const int orientation,
-                                 AuxiliaryStructure &g, auxvector<UIPair> &segment_list, phmap::flat_hash_map< UIPair, UIPair > &sub_segs_map, tbb::spin_mutex& mutex);
+                                 AuxiliaryStructure &g, auxvector<UIPair> &segment_list, phmap::flat_hash_map< UIPair, UIPair > &sub_segs_map
+#if ENABLE_MULTITHREADING
+    , tbb::spin_mutex& mutex
+#endif
+);
 
 inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastTrimesh &subm, uint v_start, uint v_stop, auxvector<uint> &intersected_edges, auxvector<uint> &intersected_tris,
-                                     AuxiliaryStructure &g, auxvector<UIPair> &segment_list, phmap::flat_hash_map< UIPair, UIPair > &sub_seg_map, tbb::spin_mutex& mutex);
+                                     AuxiliaryStructure &g, auxvector<UIPair> &segment_list, phmap::flat_hash_map< UIPair, UIPair > &sub_seg_map
+#if ENABLE_MULTITHREADING
+    , tbb::spin_mutex& mutex
+#endif
+);
 
 template<typename iterator>
 inline void boundaryWalker(const FastTrimesh &subm, uint v_start, uint v_stop, iterator curr_p, iterator curr_e, std::vector<uint> &h);

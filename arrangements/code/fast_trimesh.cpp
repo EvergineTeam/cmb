@@ -58,6 +58,7 @@ inline FastTrimesh::FastTrimesh(const std::vector<genericPoint *> &in_verts, con
 {
     if(parallel)
     {
+        #if ENABLE_MULTITHREADING
         // add vertices
         vertices.resize(in_verts.size());
         v2e.resize(in_verts.size());
@@ -125,6 +126,7 @@ inline FastTrimesh::FastTrimesh(const std::vector<genericPoint *> &in_verts, con
                 e2t[e2_id].push_back(t_id);
             }
         });
+        #endif
     }
     else
     {
@@ -497,6 +499,7 @@ inline fmvector<uint> FastTrimesh::adjT2E(uint t_id) const
 
 inline std::vector<std::array<uint, 3>> FastTrimesh::adjT2EAll(bool parallel) const {
     if(parallel) {
+        #if ENABLE_MULTITHREADING
         std::vector<std::array<uint, 3>> adjT2E(triangles.size());
         tbb::parallel_for((uint)0, (uint)triangles.size(), [this, &adjT2E](uint t_id) {
             adjT2E[t_id] = {static_cast<uint>(triEdgeID(t_id, 0)),
@@ -504,6 +507,7 @@ inline std::vector<std::array<uint, 3>> FastTrimesh::adjT2EAll(bool parallel) co
                             static_cast<uint>(triEdgeID(t_id, 2))};
         });
         return adjT2E;
+        #endif
     } else {
         std::vector<std::array<uint, 3>> adjT2E(triangles.size());
         for(uint t_id = 0; t_id < (uint)triangles.size(); t_id++) {

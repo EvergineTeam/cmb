@@ -43,7 +43,9 @@
 
 #include <cinolib/geometry/vec_mat.h>
 #include "../external/parallel-hashmap/parallel_hashmap/phmap.h"
-#include <tbb/tbb.h>
+#if ENABLE_MULTITHREADING
+    #include <tbb/tbb.h>
+#endif
 
 #include "utils.h"
 

@@ -46,10 +46,13 @@ else()
 	# grant IEEE 754 compliance
 	target_compile_options(${PROJECT_NAME} PUBLIC -frounding-math)
 	# set target architecture
-	if(ENABLE_AVX2)
+	if(ENABLE_AVX2 AND NOT EMSCRIPTEN)
 		target_compile_options(${PROJECT_NAME} PUBLIC "-mavx2")
 	elseif(ENABLE_SSE2)
 		target_compile_options(${PROJECT_NAME} PUBLIC "-msse2")
+		if(EMSCRIPTEN)
+			target_compile_options(cmb PUBLIC "-msimd128")
+		endif()
 	endif()
 endif()
 

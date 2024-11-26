@@ -98,7 +98,9 @@ template<typename T>
 struct aux_point_map {
     phmap::btree_map<aux_point, T> map;
     phmap::node_hash_map<std::array<double, 3>, phmap::btree_map<aux_point, T>> grid;
+#if PREDICATES_MAP == 2
     phmap::parallel_node_hash_map<std::array<double, 3>, phmap::btree_map<aux_point, T>, phmap::priv::hash_default_hash<std::array<double, 3>>, phmap::priv::hash_default_eq<std::array<double, 3>>, std::allocator<std::pair<const std::array<double, 3>, phmap::btree_map<aux_point, T>>>, 4, tbb::spin_mutex> pgrid;
+#endif
     phmap::flat_hash_map<std::array<double, 3>, T> map_approx;
     size_t start_size = 0;
     size_t insert_tries = 0;

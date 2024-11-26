@@ -323,3 +323,8 @@ CMB_API uint32_t* cmb_indices(cmb_Result* o)
 	auto ptr = (u8*)o;
 	return (u32*)(ptr + sizeof(ResultHeader) + 2 * 3 * sizeof(float) * header->numVertices);
 }
+
+CMB_API void cmb_nothing(int x)
+{
+	printf("nothing: %d\n", x);
+}

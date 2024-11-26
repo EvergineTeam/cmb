@@ -42,7 +42,9 @@
 
 #include <cinolib/find_intersections.h>
 
-#include <tbb/tbb.h>
+#if ENABLE_MULTITHREADING
+    #include <tbb/tbb.h>
+#endif
 
 inline void find_intersections(const std::vector<cinolib::vec3d> & verts, const std::vector<uint>  & tris,
                                std::vector<cinolib::ipair> & intersections)
@@ -51,8 +53,13 @@ inline void find_intersections(const std::vector<cinolib::vec3d> & verts, const 
     o.build_from_vectors(verts, tris);
 
     intersections.reserve((int)sqrt(tris.size()));
+    
+#if ENABLE_MULTITHREADING
     tbb::spin_mutex mutex;
     tbb::parallel_for((uint)0, (uint)o.leaves.size(), [&](uint i)
+#else
+    for(uint i = 0; i < uint(o.leaves.size()); i++)
+#endif
     {
         auto & leaf = o.leaves.at(i);
         if(leaf->item_indices.empty()) return;
@@ -71,12 +78,17 @@ inline void find_intersections(const std::vector<cinolib::vec3d> & verts, const 
                     const cinolib::Triangle *t1 = dynamic_cast<cinolib::Triangle*>(T1);
                     if(t0->intersects_triangle(t1->v,true)) // precise check (exact if CINOLIB_USES_SHEWCHUK_PREDICATES is defined)
                     {
-                        std::lock_guard<tbb::spin_mutex> guard(mutex);
+                        #if ENABLE_MULTITHREADING
+                            std::lock_guard<tbb::spin_mutex> guard(mutex);
+                        #endif
                         intersections.push_back(cinolib::unique_pair(tid0,tid1));
                     }
                 }
             }
-    });
+    }
+#if ENABLE_MULTITHREADING
+    );
+#endif
 
 
     remove_duplicates(intersections);

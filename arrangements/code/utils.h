@@ -59,11 +59,13 @@ inline size_t remove_duplicates(std::array<T, N>& values) {
   return (size_t)(std::unique(values.begin(), values.end()) - values.begin());
 }
 
+#if ENABLE_MULTITHREADING
 template<typename T>
 inline void parallel_remove_duplicates(std::vector<T>& values) {
   tbb::parallel_sort(values.begin(), values.end());
   values.erase(std::unique(values.begin(), values.end()), values.end());
 }
+#endif
 
 template<typename T>
 inline T my_unique(std::vector<T>& data) {
@@ -82,11 +84,13 @@ inline T my_unique(std::vector<T>& data) {
   }
 }
 
+#if ENABLE_MULTITHREADING
 template<typename T>
 inline void fast_remove_duplicates(std::vector<T>& values) {
   tbb::parallel_sort(values.begin(), values.end());
   values.erase(my_unique(values), values.end());
 }
+#endif
 
 template<typename T>
 inline bool contains(const std::vector<T>& values, T value) {

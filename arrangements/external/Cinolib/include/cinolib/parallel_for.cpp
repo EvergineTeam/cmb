@@ -38,6 +38,8 @@
 #include <vector>
 #include <cmath>
 
+#define SERIALIZE_PARALLEL_FOR // disable multithreading because it doesn't work with emscripten
+
 namespace cinolib
 {
 

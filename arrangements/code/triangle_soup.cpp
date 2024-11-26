@@ -37,11 +37,14 @@
 
 #include "triangle_soup.h"
 
-#include <tbb/tbb.h>
+#if ENABLE_MULTITHREADING
+    #include <tbb/tbb.h>
+#endif
 
 inline void TriangleSoup::init(point_arena& arena, double multiplier, bool parallel)
 {
     if (parallel) {
+    #if ENABLE_MULTITHREADING
         num_orig_vtxs = static_cast<uint>(vertices.size());
         num_orig_tris = static_cast<uint>(triangles.size() / 3);
 
@@ -85,6 +88,7 @@ inline void TriangleSoup::init(point_arena& arena, double multiplier, bool paral
         }
 
         initJollyPoints(arena, multiplier);
+    #endif
     }
     else
     {

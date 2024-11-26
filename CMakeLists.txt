@@ -15,6 +15,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # set the project name
 project(mesh_booleans)
 
+if(EMSCRIPTEN)
+	add_compile_options(-w) # disable warnings is Wasm because I can't find the errors
+endif()
+
+add_compile_definitions(ENABLE_MULTITHREADING=0)
+
 set(TBB_TEST OFF CACHE BOOL " " FORCE)
 set(TBB_EXAMPLES OFF CACHE BOOL " " FORCE)
 add_subdirectory(arrangements/external/oneTBB)
@@ -37,8 +43,8 @@ target_include_directories(cmb PUBLIC
 	${PROJECT_SOURCE_DIR}/arrangements/external/abseil-cpp/
 	${PROJECT_SOURCE_DIR}/arrangements/external/oneTBB/
 )
-target_link_libraries(cmb cinolib tbb)
-target_compile_definitions(cmb PUBLIC TBB_PARALLEL=1)
+target_link_libraries(cmb cinolib) #tbb)
+target_compile_definitions(cmb PUBLIC TBB_PARALLEL=0)
 
 # add the executable
 add_executable(cmdline main.cpp)
@@ -46,31 +52,36 @@ target_link_libraries(cmdline cmb)
 
 # Compiler-specific options
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        # grant IEEE 754 compliance
-        target_compile_options(cmb PUBLIC "/fp:strict")
-        # use intrinsic functions
-        target_compile_options(cmb PUBLIC "/Oi")
-        # set target architecture
-        if(ENABLE_AVX2)
-                target_compile_options(cmb PUBLIC "/arch:AVX2")
-        elseif(ENABLE_SSE2)
-                target_compile_options(cmb PUBLIC "/arch:SSE2")
-        endif()
-        # reserve enough stack size
-        target_link_options(cmb PUBLIC "/STACK:8421376")
-        # turn off annoying warnings
-        target_compile_options(cmb PUBLIC "/D _CRT_SECURE_NO_WARNINGS")
+	# grant IEEE 754 compliance
+	target_compile_options(cmb PUBLIC "/fp:strict")
+	# use intrinsic functions
+	target_compile_options(cmb PUBLIC "/Oi")
+	# set target architecture
+	if(ENABLE_AVX2)
+		target_compile_options(cmb PUBLIC "/arch:AVX2")
+	elseif(ENABLE_SSE2)
+		target_compile_options(cmb PUBLIC "/arch:SSE2")
+	endif()
+	# reserve enough stack size
+	target_link_options(cmb PUBLIC "/STACK:8421376")
+	# turn off annoying warnings
+	target_compile_options(cmb PUBLIC "/D _CRT_SECURE_NO_WARNINGS")
 else()
-        # set standard optimization level
-        target_compile_options(cmb PUBLIC -O2)
-        # reserve enough stack size
-        target_compile_options(cmb PUBLIC -Wl,-z,stacksize=8421376)
-        # grant IEEE 754 compliance
-        target_compile_options(cmb PUBLIC -frounding-math)
-        # set target architecture
-        if(ENABLE_AVX2)
-                target_compile_options(cmb PUBLIC "-mavx2")
-        elseif(ENABLE_SSE2)
-                target_compile_options(cmb PUBLIC "-msse2")
-        endif()
+	# set standard optimization level
+	target_compile_options(cmb PUBLIC -O2)
+	# reserve enough stack size
+	target_compile_options(cmb PUBLIC -Wl,-z,stacksize=8421376)
+	# grant IEEE 754 compliance
+	target_compile_options(cmb PUBLIC -frounding-math)
+	# multithreading
+	#target_compile_options(cmb PUBLIC -pthread)
+	# set target architecture
+	if(ENABLE_AVX2 AND NOT EMSCRIPTEN)
+			target_compile_options(cmb PUBLIC "-mavx2")
+	elseif(ENABLE_SSE2)
+		target_compile_options(cmb PUBLIC "-msse2")
+		if(EMSCRIPTEN)
+			target_compile_options(cmb PUBLIC "-msimd128")
+		endif()
+	endif()
 endif()
