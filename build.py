@@ -51,7 +51,11 @@ def build_wasm():
     if result.returncode != 0:
         return
     
-    arScriptStr = "CREATE build/OUT/build/wasm-binaries/cmb.a\n"
+    outputPath = "build/OUT/build/wasm-binaries"
+    if not os.path.isdir(outputPath):
+        os.makedirs(outputPath)
+
+    arScriptStr = f"CREATE {outputPath}/cmb.a\n"
     arScriptStr += f"ADDLIB {compilePath}/libcmb.a\n"
     arScriptStr += f"ADDLIB {compilePath}/shewchuk_predicates/libshewchuk_predicates.a\n"
     #arScriptStr += f"ADDLIB {compilePath}/clang_20.0_cxx20_32_release/libtbb.a\n"
