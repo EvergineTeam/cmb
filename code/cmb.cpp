@@ -213,8 +213,12 @@ static cmb_Result* prepareResult(CSpan<double> positions, CSpan<uint> indices)
 	for (u32 i = 0; i < positions.size(); i++)
 		resultPtr_positions[i] = float(positions[i]);
 
-	for (u32 i = 0; i < indices.size(); i++)
-		resultPtr_indices[i] = u32(indices[i]);
+	for (u32 i = 0; i < indices.size() / 3; i++) {
+		// flip the triangle winding
+		resultPtr_indices[3*i + 0] = u32(indices[3*i + 0]);
+		resultPtr_indices[3*i + 1] = u32(indices[3*i + 2]);
+		resultPtr_indices[3*i + 2] = u32(indices[3*i + 1]);
+	}
 
 	computeNormals(numVertices, numTriangles, (Vec3f*)resultPtr_positions, resultPtr_indices, (Vec3f*)resultPtr_normals);
 
