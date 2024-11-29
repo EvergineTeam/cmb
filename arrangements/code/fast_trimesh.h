@@ -44,6 +44,7 @@
 #include <implicit_point.h>
 #include "tree.h"
 #include "common.h"
+#include <inttypes.h>
 
 #include "../external/parallel-hashmap/parallel_hashmap/phmap.h"
 
@@ -115,6 +116,8 @@ class FastTrimesh
         inline const fmvector<uint> &adjV2E(uint v_id) const;
 
         inline fmvector<uint> adjV2T(uint v_id) const;
+
+        inline void print()const;
 
         inline void resetVerticesInfo();
 
@@ -210,6 +213,36 @@ class FastTrimesh
         inline void splitTri(uint t_id, uint v_id, Tree &tree);
 
         inline void flipTri(uint t_id);
+
+        inline void printHash()
+        {
+            uint64_t h = 0;
+            for(int i = 0; i < int(vertices.size()); i++) {
+                auto p = vertices[i].p->toExplicit3D();
+                hash_combine(h, p.X());
+                hash_combine(h, p.Y());
+                hash_combine(h, p.Z());
+            }
+            for(int i = 0; i < int(triangles.size()); i++) {
+                auto t = triangles[i];
+                hash_combine(h, t.v[0]);
+                hash_combine(h, t.v[1]);
+                hash_combine(h, t.v[2]);
+            }
+            printf("FastTriMesh: %" PRIu64 "\n", h);
+        }
+
+        inline void print() {
+            printf("FastTriMesh\n");
+            for(int i = 0; i < int(vertices.size()); i++) {
+                auto p = vertices[i].p->toExplicit3D();
+                printf("%g %g %g\n", p.X(), p.Y(), p.Z());
+            }
+            for(int i = 0; i < int(triangles.size()); i++) {
+                auto t = triangles[i];
+                printf("%d %d %d\n", int(t.v[0]), int(t.v[1]), int(t.v[2]));
+            }
+        }
 
     private:
         std::vector<iVtx>    vertices;

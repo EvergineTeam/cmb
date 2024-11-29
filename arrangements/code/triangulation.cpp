@@ -63,9 +63,15 @@ inline void triangulateSingleTriangle(TriangleSoup &ts, point_arena& arena, Fast
 
     const auto& t_points = g.trianglePointsList(t_id);
 
+    printf("triangulateSingleTriangle - 0\n");
+    ts.printHash();
+
     int e0_id = ts.edgeID(subm.vertOrigID(0), subm.vertOrigID(1));      assert(e0_id != -1);
     int e1_id = ts.edgeID(subm.vertOrigID(1), subm.vertOrigID(2));      assert(e1_id != -1);
     int e2_id = ts.edgeID(subm.vertOrigID(2), subm.vertOrigID(0));      assert(e2_id != -1);
+
+    printf("triangulateSingleTriangle - 1\n");
+    ts.printHash();
 
     //auxvector<uint> e0_points, e1_points, e2_points;
     //sortedVertexListAlongSegment(ts, g.edgePointsList(static_cast<uint>(e0_id)), subm.vertOrigID(0), subm.vertOrigID(1), e0_points);
@@ -76,11 +82,17 @@ inline void triangulateSingleTriangle(TriangleSoup &ts, point_arena& arena, Fast
     const auxvector<uint> &e1_points = g.edgePointsList(static_cast<uint>(e1_id));
     const auxvector<uint> &e2_points = g.edgePointsList(static_cast<uint>(e2_id));
 
+    printf("triangulateSingleTriangle - 2\n");
+    ts.printHash();
+
     auxvector<UIPair> t_segments(g.triangleSegmentsList(t_id).begin(), g.triangleSegmentsList(t_id).end());
 
     //uint estimated_vert_num = static_cast<uint>(t_points.size() + e0_points.size() + e1_points.size() + e2_points.size());
     uint estimated_vert_num = static_cast<uint>(3 + t_points.size() + e0_points.size() + e1_points.size() + e2_points.size());
     subm.preAllocateSpace(estimated_vert_num);
+
+    printf("triangulateSingleTriangle - 3\n");
+    ts.printHash();
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      *                                  TRIANGLE SPLIT
@@ -91,7 +103,11 @@ inline void triangulateSingleTriangle(TriangleSoup &ts, point_arena& arena, Fast
     else
         splitSingleTriangleWithTree(ts, subm, t_points);
     */
+   printf("triangulateSingleTriangle - 4\n");
+    ts.printHash();
+
     splitSingleTriangleWithStack(ts, subm, t_points, e0_points, e1_points, e2_points);
+    printf("after splitSingleTriangleWithStack\n");
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      *                                  EDGE SPLIT
@@ -110,6 +126,7 @@ inline void triangulateSingleTriangle(TriangleSoup &ts, point_arena& arena, Fast
         , mutex
     #endif
     );
+    printf("after addConstraintSegmentsInSingleTriangle\n");
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      *                      POCKETS IN COPLANAR TRIANGLES SOLVING
@@ -144,10 +161,15 @@ inline void triangulateSingleTriangle(TriangleSoup &ts, point_arena& arena, Fast
             } // endl critical section
         }
     }
+
+    printf("after POCKETS IN COPLANAR TRIANGLES SOLVING\n");
 }
 
 inline void triangulation(TriangleSoup &ts, point_arena& arena, AuxiliaryStructure &g, std::vector<uint> &new_tris, std::vector< std::bitset<NBIT> > &new_labels, bool parallel)
 {
+    printf("triangulation begin\n");
+    ts.printHash();
+
     new_labels.clear();
     new_tris.clear();
     new_tris.reserve(2 * 3 * ts.numTris());
@@ -175,6 +197,7 @@ inline void triangulation(TriangleSoup &ts, point_arena& arena, AuxiliaryStructu
         tbb::spin_mutex mutex;
     #endif
     if(parallel){
+        printf("PARALLEL\n");
         #if ENABLE_MULTITHREADING
             tbb::parallel_for((uint)0, (uint)tris_to_split.size(), [&](uint t) {
                 //for (uint t=0; t < (uint)tris_to_split.size(); t++) {
@@ -197,7 +220,13 @@ inline void triangulation(TriangleSoup &ts, point_arena& arena, AuxiliaryStructu
                              ts.tri(t_id),
                              ts.triPlane(t_id));
 
+            printf("before triangulateSingleTriangle\n");
+            ts.printHash();
+
             triangulateSingleTriangle(ts, arena, subm, t_id, g, new_tris, new_labels);
+
+            printf("after triangulateSingleTriangle\n");
+            ts.printHash();
         }
     }
 }
@@ -242,11 +271,18 @@ inline void splitSingleTriangle(const TriangleSoup &ts, FastTrimesh &subm, const
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 inline void splitSingleTriangleWithStack(const TriangleSoup &ts, FastTrimesh &subm, const auxvector<uint> &points,  const auxvector<uint> &e0_points, const auxvector<uint> &e1_points, const auxvector<uint> &e2_points)
 {
+    printf("splitSingleTriangleWithStack - begin\n");
+    subm.printHash();
+
     if(points.empty() && e0_points.empty() && e1_points.empty() && e2_points.empty()) return;
 
     int size_p2ins = 3 + points.size() + e0_points.size() + e1_points.size() + e2_points.size();
     CustomStack stack_sub_tri(size_p2ins * 3);
     std::vector<auxvector<uint>>curr_subdv(4);
+
+    printf("splitSingleTriangleWithStack - 0\n");
+    subm.printHash();
+    ts.printHash();
 
     auxvector<uint> all_points;
     all_points.reserve(size_p2ins);
@@ -277,6 +313,10 @@ inline void splitSingleTriangleWithStack(const TriangleSoup &ts, FastTrimesh &su
 
     stack_sub_tri.push(all_points);
 
+    printf("splitSingleTriangleWithStack - 1\n");
+    subm.printHash();
+    ts.printHash();
+
     while(!stack_sub_tri.empty()){
 
         auxvector<uint> &curr_tri = stack_sub_tri.pop();
@@ -290,6 +330,7 @@ inline void splitSingleTriangleWithStack(const TriangleSoup &ts, FastTrimesh &su
         if (!curr_subdv[3].empty()) curr_subdv[3].clear();
 
         int t_id = subm.triID(curr_tri[0], curr_tri[1], curr_tri[2]);
+
 
         if(t_id == -1) continue;
 
@@ -375,6 +416,9 @@ inline void splitSingleTriangleWithStack(const TriangleSoup &ts, FastTrimesh &su
         if (curr_tri.size() > 4)
             repositionPointsInStack(subm, stack_sub_tri, curr_subdv, curr_tri);
     }
+
+    printf("splitSingleTriangleWithStack - end\n");
+    subm.printHash();
 }
 
 
@@ -601,14 +645,18 @@ inline void addConstraintSegmentsInSingleTriangle(TriangleSoup &ts, point_arena&
 
     phmap::flat_hash_map< UIPair, UIPair > sub_segs_map;
     sub_segs_map.reserve(segment_list.size());
+    printf("after flat_hash_map reserve()\n");
 
     while(segment_list.size() > 0)
     {
         UIPair seg = segment_list.back();
         segment_list.pop_back();
 
+        printf("after segment_list.pop_back()\n");
+
         uint v0_id = subm.vertNewID(seg.first);
         uint v1_id = subm.vertNewID(seg.second);
+        printf("after vertNewIDs\n");
 
         addConstraintSegment(ts, arena, subm, v0_id, v1_id, orientation, g, segment_list, sub_segs_map
         #if ENABLE_MULTITHREADING
@@ -629,15 +677,23 @@ inline void addConstraintSegment(TriangleSoup &ts, point_arena& arena, FastTrime
 {
     int e_id = subm.edgeID(v0_id, v1_id);
 
+    printf("addConstraintSegment - 0\n");
+    printf("v0_id = %d, v1_id = %d", int(v0_id), int(v1_id));
+    printf("numVerts = %d, numEdges = %d, numTris = %d", int(subm.numVerts()), int(subm.numEdges()), int(subm.numTris()));
+
     if(e_id != -1) // edge already present in the mesh, just flag it as constraint
     {
         subm.setEdgeConstr(static_cast<uint>(e_id));
         return;
     }
 
+    printf("addConstraintSegment - 1\n");
+
     // for efficiency, it's better to start from the vert with lowest valence
     uint v_start = (subm.vertValence(v0_id) < subm.vertValence(v1_id)) ? v0_id : v1_id;
     uint v_stop  = (v_start == v0_id) ? v1_id : v0_id;
+
+    printf("addConstraintSegment - 2\n");
 
     auxvector<uint> intersected_edges;
     auxvector<uint> intersected_tris;
@@ -648,12 +704,15 @@ inline void addConstraintSegment(TriangleSoup &ts, point_arena& arena, FastTrime
     #endif
     );
 
+    printf("addConstraintSegment - 3\n");
+
     if(intersected_edges.size() == 0) return;
 
     // walk along the border
     std::vector<uint> h0, h1;
     boundaryWalker(subm, v_start, v_stop,  intersected_tris.begin(),  intersected_edges.begin(),  h0);
     boundaryWalker(subm, v_stop,  v_start, intersected_tris.rbegin(), intersected_edges.rbegin(), h1);
+    printf("addConstraintSegment - 4\n");
 
     assert(h0.size() >= 3);
     assert(h1.size() >= 3);
@@ -661,16 +720,19 @@ inline void addConstraintSegment(TriangleSoup &ts, point_arena& arena, FastTrime
     std::vector<uint> new_tris;
     earcutLinear(subm, h0, new_tris, orientation);
     earcutLinear(subm, h1, new_tris, orientation);
+    printf("addConstraintSegment - 5\n");
 
     for(std::vector<uint>::iterator i = new_tris.begin(); i < new_tris.end(); i+=3)
     {
         subm.addTri(*i, *(i+1), *(i+2));
     }
+    printf("addConstraintSegment - 6\n");
 
     subm.removeTris(intersected_tris);
     e_id = subm.edgeID(v_start, v_stop);
     assert(e_id != -1);
     subm.setEdgeConstr(static_cast<uint>(e_id)); // edge marked as constr
+    printf("addConstraintSegment END\n");
 }
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -682,27 +744,32 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
 #endif
 )
 {
-    printf("findIntersectingElements - start\n");
     uint orig_vstart = subm.vertOrigID(v_start);
     uint orig_vstop  = subm.vertOrigID(v_stop);
 
     // find the edge in link(seed) that intersect {A,B}
-    for(uint t_id : subm.adjV2T(v_start))
+    auto adjV = subm.adjV2T(v_start);
+    printf("findIntersectingElements - 0\n");
+
+    for(size_t i = 0; i < adjV.size(); i++)
     {
-        printf("findIntersectingElements - loop iter start\n");
+        const uint t_id = adjV[i];
         uint e_id = subm.edgeOppToVert(t_id, v_start);
         uint ev0_id = subm.edgeVertID(e_id, 0);
         uint ev1_id = subm.edgeVertID(e_id, 1);
         assert((ev0_id != v_stop && ev1_id != v_stop) && "v0_id or v1_id == v_stop");
+        printf("findIntersectingElements - 1\n");
 
         if(segmentsIntersectInside(subm, v_start, v_stop, ev0_id, ev1_id))
         {
             intersected_edges.push_back(e_id);
             intersected_tris.push_back(t_id);
+            printf("findIntersectingElements - before break\n");
             break;
         }
         else if(pointInsideSegment(subm, v_start, v_stop, ev0_id))
         {
+            printf("findIntersectingElements - 2\n");
             // the original edge (v_start, v_stop) is split in (v_start-v0) - (v0-v_stop) and put in the segment_list to check later
             uint orig_v0 = subm.vertOrigID(ev0_id);
             int edge_id  = subm.edgeID(v_start, ev0_id);
@@ -714,11 +781,13 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
             intersected_edges.clear();
 
             splitSegmentInSubSegments(orig_vstart, orig_vstop, orig_v0, sub_seg_map);
+            printf("findIntersectingElements - 3\n");
 
             return;
         }
         else if(pointInsideSegment(subm, v_start, v_stop, ev1_id))
         {
+            printf("findIntersectingElements - 4\n");
             // the original edge (v_start, v_stop) is split in (v_start-v1) - (v1-v_stop) and put in the segment_list to check later
             uint orig_v1 = subm.vertOrigID(ev1_id);
             int edge_id  = subm.edgeID(v_start, ev1_id);
@@ -730,12 +799,13 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
             intersected_edges.clear();
 
             splitSegmentInSubSegments(orig_vstart, orig_vstop, orig_v1, sub_seg_map);
-
+            printf("findIntersectingElements - 5\n");
             return;
         }
         printf("findIntersectingElements - loop iterend\n");
     }
 
+    printf("findIntersectingElements - before assert intersected_edges.size() > 0\n");
     assert(intersected_edges.size() > 0);
 
     printf("findIntersectingElements - while start\n");
@@ -748,12 +818,14 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
 
         if(!subm.edgeIsConstr(e_id)) // no-constraint edge
         {
+            printf("findIntersectingElements - 0 (%d)\n", int(e_id));
             int t_id = subm.triOppToEdge(e_id, intersected_tris.back());
             assert(t_id >= 0);
             uint v2  = subm.triVertOppositeTo(static_cast<uint>(t_id), ev0_id, ev1_id);
 
             if(segmentsIntersectInside(subm, v_start, v_stop, ev0_id, v2))
             {
+                printf("findIntersectingElements - 1 (%d)\n", int(e_id));
                 int int_edge = subm.edgeID(ev0_id, v2);
                 assert(int_edge >= 0);
 
@@ -762,6 +834,7 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
             }
             else if(segmentsIntersectInside(subm, v_start, v_stop, ev1_id, v2))
             {
+                printf("findIntersectingElements - 2 (%d)\n", int(e_id));
                 int int_edge = subm.edgeID(ev1_id, v2);
                 assert(int_edge >= 0);
 
@@ -770,6 +843,7 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
             }
             else if(v2 != v_stop)
             {
+                printf("findIntersectingElements - 3 (%d)\n", int(e_id));
                 assert(pointInsideSegment(subm, v_start, v_stop, v2));
 
                 // the original edge (v_start, v_stop) is split in (v_start-v2) - (v2-v_stop) and put in the segment_list to check later
@@ -786,12 +860,15 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
 
             else
             {
+                printf("findIntersectingElements - 4 (%d)\n", int(e_id));
                 break; // converged (v2 == v_stop)
             }
 
+            printf("findIntersectingElements - 5 (%d)\n", int(e_id));
         }
         else // // e_id is a constraint edge already present in the triangulation
         {
+            printf("findIntersectingElements - 6 (%d)\n", int(e_id));
             // TPI creation (if it doesn't exist)
             uint orig_v0 = subm.vertOrigID(ev0_id);
             uint orig_v1 = subm.vertOrigID(ev1_id);
@@ -825,6 +902,8 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
             splitSegmentInSubSegments(orig_vstart, orig_vstop, orig_tpi_id, sub_seg_map);
             splitSegmentInSubSegments(orig_v0, orig_v1, orig_tpi_id, sub_seg_map);
 
+            printf("findIntersectingElements - 7 (%d)\n", int(e_id));
+
             return;
         }
 
@@ -833,13 +912,16 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
     // append the last triangle
     uint e_id = intersected_edges.back();
     int t_id = subm.triOppToEdge(e_id, intersected_tris.back());
+    printf("before assert t_id != -1\n");
     assert(t_id != -1 && "tri opposite to edge not found");
+    printf("after assert t_id != -1\n");
 
     intersected_tris.push_back(static_cast<uint>(t_id));
 
+    printf("before assert subm.triContainsVert\n");
     assert(subm.triContainsVert(static_cast<uint>(t_id), v_start) ||
            subm.triContainsVert(static_cast<uint>(t_id), v_stop));
-
+    printf("after assert subm.triContainsVert\n");
 }
 
 
@@ -1226,6 +1308,7 @@ inline bool pointInsideSegment(const FastTrimesh &subm, uint ev0_id, uint ev1_id
 
 inline void splitSegmentInSubSegments(uint v_start, uint v_stop, uint mid_point, phmap::flat_hash_map< UIPair, UIPair > &sub_segments_map)
 {
+    printf("splitSegmentInSubSegments - begin\n");
     UIPair orig_seg, sub_seg0, sub_seg1;
     (v_start < v_stop) ? orig_seg = std::make_pair(v_start, v_stop) : orig_seg = std::make_pair(v_stop, v_start);
     (v_start < mid_point) ? sub_seg0 = std::make_pair(v_start, mid_point) : sub_seg0 = std::make_pair(mid_point, v_start);
@@ -1244,6 +1327,7 @@ inline void splitSegmentInSubSegments(uint v_start, uint v_stop, uint mid_point,
         sub_segments_map[sub_seg0] = ref_seg;
         sub_segments_map[sub_seg1] = ref_seg;
     }
+    printf("splitSegmentInSubSegments - end\n");
 }
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

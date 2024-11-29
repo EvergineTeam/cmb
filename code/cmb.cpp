@@ -153,6 +153,10 @@ static void calcBooleanOp(BoolOp op,
 	const uint numTrisA = indicesA.size() / 3;
 	const uint numTrisB = indicesB.size() / 3;
 	const uint firstIndB = positionsA.size() / 3;
+	printf("numPositionsA: %d\n", int(positionsA.size()));
+	printf("numPositionsB: %d\n", int(positionsB.size()));
+	printf("numTrisA: % d\n", numTrisA);
+	printf("numTrisB: % d\n", numTrisB);
 
 	// incorporate B positions to A
 	positionsA.reserve(positionsA.size() + positionsB.size());

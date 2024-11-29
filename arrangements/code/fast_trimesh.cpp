@@ -245,12 +245,36 @@ inline fmvector<uint> FastTrimesh::adjV2T(uint v_id) const
 
     for(uint e_id : v2e[v_id])
     {
-        for(uint t_id : e2t[e_id])
+        for (uint t_id : e2t[e_id]) {
             v2t.push_back(t_id);
+        }
     }
+
     remove_duplicates(v2t);
 
     return v2t;
+}
+
+inline void FastTrimesh::print()const
+{
+    printf("adjV2T - start\n");
+    printf("v2e(%d) {\n", int(v2e.size()));
+    for (const auto& v : v2e) {
+        printf("\t{");
+        for (int e : v)
+            printf("%d, ", int(e));
+        printf("},\n");
+    }
+    printf("}\n");
+
+    printf("e2t(%d) {\n", int(e2t.size()));
+    for (const auto& v : e2t) {
+        printf("\t{");
+        for (int t : v)
+            printf("%d, ", int(t));
+        printf("},\n");
+    }
+    printf("}\n");
 }
 
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

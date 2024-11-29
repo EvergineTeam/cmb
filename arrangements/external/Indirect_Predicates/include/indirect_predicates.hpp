@@ -7177,7 +7177,9 @@ inline void lambda3d_LNC_exact(double px, double py, double pz, double qx, doubl
 
 inline bool lambda3d_LPI_interval(interval_number px, interval_number py, interval_number pz, interval_number qx, interval_number qy, interval_number qz, interval_number rx, interval_number ry, interval_number rz, interval_number sx, interval_number sy, interval_number sz, interval_number tx, interval_number ty, interval_number tz, interval_number& lambda_x, interval_number& lambda_y, interval_number& lambda_z, interval_number& lambda_d)
 {
-   setFPUModeToRoundUP();
+   printf("lambda3d_LPI_interval: %g, %g, %g, %g, %g, %g, %g, %g, %g, %g, %g, %g, %g, %g, %g\n",
+      *px.getInterval(), *py.getInterval(), *pz.getInterval(), *qx.getInterval(), *qy.getInterval(), *qz.getInterval(), *rx.getInterval(), *ry.getInterval(), *rz.getInterval(), *sx.getInterval(), *sy.getInterval(), *sz.getInterval(), *tx.getInterval(), *ty.getInterval(), *tz.getInterval());
+   //setFPUModeToRoundUP();
    const interval_number a11(px - qx);
    const interval_number a12(py - qy);
    const interval_number a13(pz - qz);
@@ -7215,11 +7217,20 @@ inline bool lambda3d_LPI_interval(interval_number px, interval_number py, interv
    const interval_number dpx(ld * px);
    const interval_number dpy(ld * py);
    const interval_number dpz(ld * pz);
+   printf("a11=%g, a12=%g, a13=%g, a21=%g, a22=%g, a23=%g, a31=%g, a32=%g, a33=%g, tv1=%g, tv2=%g, a2233=%g, tv3=%g, tv4=%g, a2133=%g, tv5=%g, tv6=%g, a2132=%g, tv7=%g, tv8=%g, tv9=%g, tt1=%g, ld=%g, px_rx=%g, py_ry=%g, pz_rz=%g, tt2=%g, tt3=%g, tt4=%g, tt5=%g, n=%g, ax=%g, ay=%g, az=%g, dpx=%g, dpy=%g, dpz=%g\n",
+      *a11.getInterval(), *a12.getInterval(), *a13.getInterval(), *a21.getInterval(), *a22.getInterval(), *a23.getInterval(), *a31.getInterval(), *a32.getInterval(), *a33.getInterval(), *tv1.getInterval(), *tv2.getInterval(), *a2233.getInterval(), *tv3.getInterval(), *tv4.getInterval(), *a2133.getInterval(), *tv5.getInterval(), *tv6.getInterval(), *a2132.getInterval(), *tv7.getInterval(), *tv8.getInterval(), *tv9.getInterval(), *tt1.getInterval(), *ld.getInterval(), *px_rx.getInterval(), *py_ry.getInterval(), *pz_rz.getInterval(), *tt2.getInterval(), *tt3.getInterval(), *tt4.getInterval(), *tt5.getInterval(), *n.getInterval(), *ax.getInterval(), *ay.getInterval(), *az.getInterval(), *dpx.getInterval(), *dpy.getInterval(), *dpz.getInterval());
+
    lambda_x = dpx - ax;
    lambda_y = dpy - ay;
    lambda_z = dpz - az;
    lambda_d = tt1 + tv9;
-   setFPUModeToRoundNEAR();
+   //setFPUModeToRoundNEAR();
+
+   printf("lambdas: (%g, %g), (%g, %g) (%g, %g) (%g, %g)\n",
+      lambda_x.getInterval()[0], lambda_x.getInterval()[1],
+      lambda_y.getInterval()[0], lambda_y.getInterval()[1],
+      lambda_z.getInterval()[0], lambda_z.getInterval()[1],
+      lambda_d.getInterval()[0], lambda_d.getInterval()[1]);
 
    return lambda_d.signIsReliable();
 }

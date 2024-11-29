@@ -95,6 +95,16 @@ inline void booleanPipeline(const std::vector<double> &in_coords, const std::vec
                             const std::vector<uint> &in_labels, const BoolOp &op, std::vector<double> &bool_coords,
                             std::vector<uint> &bool_tris, std::vector< std::bitset<NBIT> > &bool_labels)
 {
+    printf("-- booleanPipeline --\n");
+    printf("in_coords(%d): {", int(in_coords.size()));
+    for (int i = 0; i < 100; i++)
+        printf("%g, ", in_coords[i]);
+    printf("}\n");
+    printf("in_tris(%d) = {", int(in_tris.size()));
+    for (int i = 0; i < 100; i++)
+        printf("%d, ", int(in_tris[i]));
+    printf("}\n");
+
     initFPU();
 
     point_arena arena;
@@ -147,12 +157,24 @@ inline void customArrangementPipeline(const std::vector<double> &in_coords, cons
 
     TriangleSoup ts(arena, vertices, arr_in_tris, arr_in_labels, multiplier, parallel);
 
+    printf("TS\n");
+    ts.printHash();
+
     AuxiliaryStructure g;
     customDetectIntersections(ts, g.intersectionList(), octree);
 
+    printf("after customDetectIntersections\n");
+    ts.printHash();
+
     g.initFromTriangleSoup(ts);
 
+    printf("after initFromTriangleSoup\n");
+    ts.printHash();
+
     classifyIntersections(ts, arena, g);
+
+    printf("after classifyIntersections\n");
+    ts.printHash();
 
     triangulation(ts, arena, g, arr_out_tris, labels.surface, parallel);
     ts.appendJollyPoints();
@@ -168,6 +190,8 @@ void customRemoveDegenerateAndDuplicatedTriangles(const std::vector<genericPoint
 {
     if(parallel)
     {
+        printf("PARALLEL\n");
+    #if ENABLE_MULTITHREADING
         using vec3i = std::array<uint, 3>;
         uint num_orig_tris = static_cast<uint>(tris.size() / 3);
         vec3i* data_orig_tris = (vec3i*)tris.data();
@@ -237,6 +261,7 @@ void customRemoveDegenerateAndDuplicatedTriangles(const std::vector<genericPoint
 
         tris.resize(t_off);
         labels.resize(l_off);
+    #endif
     } else {
         uint num_orig_tris = static_cast<uint>(tris.size() / 3);
         uint t_off = 0, l_off = 0;
@@ -388,6 +413,8 @@ inline void addDuplicateTrisInfoInStructures(const std::vector<DuplTriInfo> &dup
 inline void computeAllPatches(FastTrimesh &tm, const Labels &labels, std::vector<phmap::flat_hash_set<uint>> &patches, bool parallel)
 {
     if(parallel) {
+        printf("PARALLEL\n");
+    #if ENABLE_MULTITHREADING
         tm.resetVerticesInfo();
         auto adjT2E = tm.adjT2EAll(parallel);
 
@@ -399,6 +426,7 @@ inline void computeAllPatches(FastTrimesh &tm, const Labels &labels, std::vector
                 computeSinglePatch(tm, t_id, labels, patches.back(), adjT2E);
             }
         }
+    #endif
     } else {
         tm.resetVerticesInfo();
 

@@ -129,6 +129,35 @@ class TriangleSoup
 
         inline void appendJollyPoints();
 
+        inline void print()const
+        {
+            printf("TriangleSoup\n");
+            for(int i = 0; i < vertices.size(); i++) {
+                auto p = vertices[i]->toExplicit3D();
+                printf("%g %g %g\n", p.X(), p.Y(), p.Z());
+            }
+            for(int i = 0; i < triangles.size(); i++) {
+                auto p = triangles[i];
+                printf("%d\n", int(p));
+            }
+        }
+
+        inline void printHash()const
+        {
+            uint64_t h = 0;
+            for(int i = 0; i < vertices.size(); i++) {
+                auto p = vertices[i]->toExplicit3D();
+                hash_combine(h, p.X());
+                hash_combine(h, p.Y());
+                hash_combine(h, p.Z());
+            }
+            for(int i = 0; i < triangles.size(); i++) {
+                auto p = triangles[i];
+                hash_combine(h, p);
+            }
+            printf("TriangleSoup: %" PRIu64 "\n", h);
+        }
+
     private:
 
         std::vector<genericPoint*>      &vertices;
