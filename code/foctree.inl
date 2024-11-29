@@ -113,6 +113,8 @@ void FOctree::build(uint max_depth, uint items_per_leaf, bool parallel)
                            // this should disappear eventually....
 
     if(parallel) {
+        printf("PARALLEL\n");
+    #if ENABLE_MULTITHREADING
         if(root->item_indices.size()<items_per_leaf || max_depth==1) return;
         if(max_depth == 2) {
             tbb::spin_mutex mutex;
@@ -123,6 +125,7 @@ void FOctree::build(uint max_depth, uint items_per_leaf, bool parallel)
             build_recursive(max_depth, items_per_leaf, 0, 1, mutex, group);
             group.wait();
         }
+    #endif
     } else {
         tbb::spin_mutex mutex;
         if(root->item_indices.size()<items_per_leaf || max_depth==1)

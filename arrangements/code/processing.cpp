@@ -74,6 +74,7 @@ inline void mergeDuplicatedVertices(const std::vector<double> &in_coords, const 
 
     if(parallel)
     {
+        printf("PARALLEL\n");
     #if ENABLE_MULTITHREADING
         using vec3 = std::array<double, 3>;
         auto in_vecs = (vec3*)in_coords.data();

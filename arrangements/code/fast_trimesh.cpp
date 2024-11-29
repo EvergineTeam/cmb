@@ -58,6 +58,7 @@ inline FastTrimesh::FastTrimesh(const std::vector<genericPoint *> &in_verts, con
 {
     if(parallel)
     {
+        printf("PARALLEL\n");
         #if ENABLE_MULTITHREADING
         // add vertices
         vertices.resize(in_verts.size());
@@ -499,6 +500,7 @@ inline fmvector<uint> FastTrimesh::adjT2E(uint t_id) const
 
 inline std::vector<std::array<uint, 3>> FastTrimesh::adjT2EAll(bool parallel) const {
     if(parallel) {
+        printf("PARALLEL\n");
         #if ENABLE_MULTITHREADING
         std::vector<std::array<uint, 3>> adjT2E(triangles.size());
         tbb::parallel_for((uint)0, (uint)triangles.size(), [this, &adjT2E](uint t_id) {
@@ -689,22 +691,6 @@ inline void FastTrimesh::removeTri(uint t_id)
     }
 
     removeTriUnref(t_id);
-}
-
-//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-inline void FastTrimesh::removeTris(const std::vector<uint> &t_ids)
-{
-    std::vector<uint> tmp_t_ids = t_ids;
-    std::sort(tmp_t_ids.rbegin(), tmp_t_ids.rend());
-    for(uint &t_id : tmp_t_ids) removeTri(t_id);
-}
-
-inline void FastTrimesh::removeTris(const fmvector<uint> &t_ids)
-{
-    fmvector<uint> tmp_t_ids = t_ids;
-    std::sort(tmp_t_ids.rbegin(), tmp_t_ids.rend());
-    for(uint &t_id : tmp_t_ids) removeTri(t_id);
 }
 
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

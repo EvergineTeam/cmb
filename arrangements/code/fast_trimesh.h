@@ -193,8 +193,13 @@ class FastTrimesh
 
         inline void removeTri(uint t_id);
 
-        inline void removeTris(const std::vector<uint> &t_ids);
-        inline void removeTris(const fmvector<uint> &t_ids);
+        template <typename Container>
+        inline void removeTris(const Container &t_ids)
+        {
+            Container tmp_t_ids = t_ids;
+            std::sort(tmp_t_ids.rbegin(), tmp_t_ids.rend());
+            for(uint &t_id : tmp_t_ids) removeTri(t_id);
+        }
 
         inline void splitEdge(const uint  &e_id, uint v_id);
 

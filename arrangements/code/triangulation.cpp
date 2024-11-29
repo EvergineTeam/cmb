@@ -797,7 +797,9 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
             uint orig_v1 = subm.vertOrigID(ev1_id);
             uint orig_tpi_id;
 
+#if ENABLE_MULTITHREADING
 #pragma omp critical
+#endif
             { // start critical section...
                 #if ENABLE_MULTITHREADING
                     std::lock_guard<tbb::spin_mutex> lock(mutex);
