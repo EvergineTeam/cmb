@@ -158,23 +158,23 @@ inline void customArrangementPipeline(const std::vector<double> &in_coords, cons
     TriangleSoup ts(arena, vertices, arr_in_tris, arr_in_labels, multiplier, parallel);
 
     printf("TS\n");
-    ts.printHash();
+    ts.print();
 
     AuxiliaryStructure g;
     customDetectIntersections(ts, g.intersectionList(), octree);
 
     printf("after customDetectIntersections\n");
-    ts.printHash();
+    ts.print();
 
     g.initFromTriangleSoup(ts);
 
     printf("after initFromTriangleSoup\n");
-    ts.printHash();
+    ts.print();
 
     classifyIntersections(ts, arena, g);
 
     printf("after classifyIntersections\n");
-    ts.printHash();
+    ts.print();
 
     triangulation(ts, arena, g, arr_out_tris, labels.surface, parallel);
     ts.appendJollyPoints();

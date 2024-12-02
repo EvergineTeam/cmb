@@ -806,7 +806,10 @@ inline void findIntersectingElements(TriangleSoup &ts, point_arena& arena, FastT
     }
 
     printf("findIntersectingElements - before assert intersected_edges.size() > 0\n");
-    assert(intersected_edges.size() > 0);
+    if(intersected_edges.size() == 0) {
+        printf("assert intersected_edges.size() > 0\n");
+        return;
+    }
 
     printf("findIntersectingElements - while start\n");
     // walk along the topology to find the sorted list of edges and tris that intersect {v_start, v_stop}

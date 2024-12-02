@@ -235,8 +235,9 @@ class FastTrimesh
         inline void print() {
             printf("FastTriMesh\n");
             for(int i = 0; i < int(vertices.size()); i++) {
-                auto p = vertices[i].p->toExplicit3D();
-                printf("%g %g %g\n", p.X(), p.Y(), p.Z());
+                double x, y, z;
+                vertices[i].p->getApproxXYZCoordinates(x, y, z);
+                printf("%g %g %g\n", x, y, z);
             }
             for(int i = 0; i < int(triangles.size()); i++) {
                 auto t = triangles[i];

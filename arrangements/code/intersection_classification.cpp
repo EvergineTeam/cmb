@@ -135,7 +135,7 @@ inline void checkTriangleTriangleIntersections(TriangleSoup &ts, point_arena& ar
     phmap::flat_hash_set<uint> li; // intersection list
 
     printf("classifyIntersections - 0\n");
-    ts.printHash();
+    ts.print();
 
     /* ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      *      check of tB respect to tA
@@ -147,7 +147,7 @@ inline void checkTriangleTriangleIntersections(TriangleSoup &ts, point_arena& ar
     normalizeOrientations(orBA);
 
     printf("classifyIntersections - 1\n");
-    ts.printHash();
+    ts.print();
 
     if(sameOrientation(orBA[0], orBA[1]) && sameOrientation(orBA[1], orBA[2]) && (orBA[0] != 0.0)) return;   //no intersection found
 
@@ -164,7 +164,7 @@ inline void checkTriangleTriangleIntersections(TriangleSoup &ts, point_arena& ar
     }
 
     printf("classifyIntersections - 2\n");
-    ts.printHash();
+    ts.print();
 
     // a single edge of tB is coplanar to tA    (e.g. orBA: 1 0 0)
     int tmp_edge_id = singleCoplanarEdge(orBA);
@@ -182,7 +182,7 @@ inline void checkTriangleTriangleIntersections(TriangleSoup &ts, point_arena& ar
     }
 
     printf("classifyIntersections - 3\n");
-    ts.printHash();
+    ts.print();
 
     // a vertex of tB is coplanar to tA, and the opposite edge could intersect tA   (e.g. orBA: -1 0 1)
     tmp_vtx_id = vtxInPlaneAndOppositeEdgeCrossPlane(orBA);
@@ -200,7 +200,7 @@ inline void checkTriangleTriangleIntersections(TriangleSoup &ts, point_arena& ar
     tmp_vtx_id = vtxOnASideAndOppositeEdgeOnTheOther(orBA, opp_v0, opp_v1);
 
     printf("classifyIntersections - 4\n");
-    ts.printHash();
+    ts.print();
 
     if(tmp_vtx_id != -1)
     {
@@ -209,25 +209,25 @@ inline void checkTriangleTriangleIntersections(TriangleSoup &ts, point_arena& ar
         uint id_opp_v1 = ts.triVertID(tB_id, opp_v1);
 
         printf("classifyIntersections - 4.1\n");
-        ts.printHash();
+        ts.print();
 
         int edge_id0 = ts.edgeID(id_v, id_opp_v0);
         int edge_id1 = ts.edgeID(id_v, id_opp_v1);
         assert(edge_id0 != -1 && edge_id1 != -1);
 
         printf("classifyIntersections - 4.2\n");
-        ts.printHash();
+        ts.print();
 
         checkSingleNoCoplanarEdgeIntersection(ts, arena, static_cast<uint>(edge_id0), tA_id, v_tmp, g, li);
 
         printf("classifyIntersections - 4.3\n");
-        ts.printHash();
+        ts.print();
 
         checkSingleNoCoplanarEdgeIntersection(ts, arena, static_cast<uint>(edge_id1), tA_id, v_tmp, g, li);
     }
 
     printf("classifyIntersections - 5\n");
-    ts.printHash();
+    ts.print();
 
     if(!coplanar_tris && li.size() > 1) goto final_check; // sorry about that :(
 
@@ -258,7 +258,7 @@ inline void checkTriangleTriangleIntersections(TriangleSoup &ts, point_arena& ar
     }
 
     printf("classifyIntersections - 6\n");
-    ts.printHash();
+    ts.print();
 
     // a single edge of tA is coplanar to tB    (e.g. orAB: 1 0 0)
     tmp_edge_id = singleCoplanarEdge(orAB);
@@ -287,7 +287,7 @@ inline void checkTriangleTriangleIntersections(TriangleSoup &ts, point_arena& ar
     }
 
     printf("classifyIntersections - 7\n");
-    ts.printHash();
+    ts.print();
 
     // a vertex of tA is on one side of the plane defined to tB, and the opposite edge (always in tA) is in the other (e.g. orBA: -1 1 1)
     tmp_vtx_id = vtxOnASideAndOppositeEdgeOnTheOther(orAB, opp_v0, opp_v1);
@@ -306,7 +306,7 @@ inline void checkTriangleTriangleIntersections(TriangleSoup &ts, point_arena& ar
     }
 
     printf("classifyIntersections - 8\n");
-    ts.printHash();
+    ts.print();
 
     final_check:
 
@@ -325,7 +325,7 @@ inline void checkTriangleTriangleIntersections(TriangleSoup &ts, point_arena& ar
     }
 
     printf("classifyIntersections - 9\n");
-    ts.printHash();
+    ts.print();
 }
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -405,7 +405,7 @@ inline uint addEdgeCrossEdgeInters(TriangleSoup &ts, point_arena& arena, uint e0
 inline uint addEdgeCrossTriInters(TriangleSoup &ts, point_arena& arena, uint e_id, uint t_id, AuxiliaryStructure &g)
 {
     printf("addEdgeCrossTriInters - 0\n");
-    ts.printHash();
+    ts.print();
     
     auto p0 = ts.edgeVert(e_id, 0);
     auto p1 = ts.edgeVert(e_id, 1);
@@ -428,14 +428,14 @@ inline uint addEdgeCrossTriInters(TriangleSoup &ts, point_arena& arena, uint e_i
     implicitPoint3D_LPI *tmp_i = &arena.edges.emplace_back(ev0, ev1, ev2, ev3, ev4);
 
     printf("addEdgeCrossTriInters - 1\n");
-    ts.printHash();
+    ts.print();
 
     uint new_v_id;
     uint pos = ts.numVerts();
     std::pair<uint, bool> ins = g.addVertexInSortedList(tmp_i, pos); // check if the intersection already exists
 
     printf("addEdgeCrossTriInters - 2\n");
-    ts.printHash();
+    ts.print();
 
     double x, y, z;
     bool goodApprox = tmp_i->getApproxXYZCoordinates(x, y, z);
@@ -448,7 +448,7 @@ inline uint addEdgeCrossTriInters(TriangleSoup &ts, point_arena& arena, uint e_i
 
         new_v_id = ts.addImplVert(tmp_i);   // add vertex in mesh
         printf("addEdgeCrossTriInters - 3\n");
-        ts.printHash();
+        ts.print();
         assert(new_v_id == pos);
     }
     else // already present vertex
@@ -457,14 +457,14 @@ inline uint addEdgeCrossTriInters(TriangleSoup &ts, point_arena& arena, uint e_i
         arena.edges.pop_back();
 
         printf("addEdgeCrossTriInters - 4\n");
-        ts.printHash();
+        ts.print();
     }
 
     g.addVertexInTriangle(t_id, new_v_id);
     g.addVertexInEdge(e_id, new_v_id);
 
     printf("addEdgeCrossTriInters - 5\n");
-    ts.printHash();
+    ts.print();
 
     return new_v_id;
 }
@@ -765,7 +765,7 @@ inline void checkSingleNoCoplanarEdgeIntersection(TriangleSoup &ts, point_arena&
                                                   phmap::flat_hash_set<uint> &v_tmp, AuxiliaryStructure &g, phmap::flat_hash_set<uint> &li) // li -> intersection list
 {
     printf("checkSingleNoCoplanarEdgeIntersection - 0\n");
-    ts.printHash();
+    ts.print();
 
     auto pa = ts.edgeVertPtr(e_id, 0);
     auto pb = ts.edgeVertPtr(e_id, 1);
@@ -774,12 +774,12 @@ inline void checkSingleNoCoplanarEdgeIntersection(TriangleSoup &ts, point_arena&
     auto pe = ts.triVertPtr(t_id, 2);
 
     printf("checkSingleNoCoplanarEdgeIntersection - 0.1\n");
-    ts.printHash();
+    ts.print();
 
     cinolib::SimplexIntersection inters = cinolib::segment_triangle_intersect_3d(pa, pb, pc, pd, pe);
 
     printf("checkSingleNoCoplanarEdgeIntersection - 1\n");
-    ts.printHash();
+    ts.print();
 
     if(inters == cinolib::DO_NOT_INTERSECT || inters == cinolib::SIMPLICIAL_COMPLEX) return; // no intersection found
 
@@ -789,7 +789,7 @@ inline void checkSingleNoCoplanarEdgeIntersection(TriangleSoup &ts, point_arena&
         return;
 
     printf("checkSingleNoCoplanarEdgeIntersection - 2\n");
-    ts.printHash();
+    ts.print();
 
     // the edge intersect the tri in seg 0
     if(cinolib::segment_segment_intersect_3d(ts.edgeVertPtr(e_id, 0), ts.edgeVertPtr(e_id, 1),
@@ -803,7 +803,7 @@ inline void checkSingleNoCoplanarEdgeIntersection(TriangleSoup &ts, point_arena&
     }
 
     printf("checkSingleNoCoplanarEdgeIntersection - 3\n");
-    ts.printHash();
+    ts.print();
 
     // the edge intersect the tri in seg 1
     if(cinolib::segment_segment_intersect_3d(ts.edgeVertPtr(e_id, 0), ts.edgeVertPtr(e_id, 1),
@@ -817,7 +817,7 @@ inline void checkSingleNoCoplanarEdgeIntersection(TriangleSoup &ts, point_arena&
     }
 
     printf("checkSingleNoCoplanarEdgeIntersection - 4\n");
-    ts.printHash();
+    ts.print();
 
     // the edge intersect the tri in seg 2
     if(cinolib::segment_segment_intersect_3d(ts.edgeVertPtr(e_id, 0), ts.edgeVertPtr(e_id, 1),
@@ -831,7 +831,7 @@ inline void checkSingleNoCoplanarEdgeIntersection(TriangleSoup &ts, point_arena&
     }
 
     printf("checkSingleNoCoplanarEdgeIntersection - 5\n");
-    ts.printHash();
+    ts.print();
 
     // the edge intersect the inner triangle
     uint int_point = addEdgeCrossTriInters(ts, arena, e_id, t_id, g);
@@ -839,7 +839,7 @@ inline void checkSingleNoCoplanarEdgeIntersection(TriangleSoup &ts, point_arena&
     v_tmp.insert(int_point);
 
     printf("checkSingleNoCoplanarEdgeIntersection - 6\n");
-    ts.printHash();
+    ts.print();
 }
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -901,7 +901,7 @@ inline void checkVtxInTriangleIntersection(TriangleSoup &ts, uint v_id, uint t_i
 inline void propagateCoplanarTrianglesIntersections(TriangleSoup &ts, AuxiliaryStructure &g)
 {
     printf("propagateCoplanarTrianglesIntersections - begin\n");
-    ts.printHash();
+    ts.print();
     for(uint t_id = 0; t_id < ts.numTris(); t_id++)
     {
         if(g.triangleHasCoplanars(t_id))
@@ -943,7 +943,7 @@ inline void propagateCoplanarTrianglesIntersections(TriangleSoup &ts, AuxiliaryS
         }
     }
     printf("propagateCoplanarTrianglesIntersections - end\n");
-    ts.printHash();
+    ts.print();
 }
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

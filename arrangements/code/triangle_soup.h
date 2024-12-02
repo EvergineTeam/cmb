@@ -131,15 +131,18 @@ class TriangleSoup
 
         inline void print()const
         {
-            printf("TriangleSoup\n");
+            printf("TriangleSoup\nverts: ");
             for(int i = 0; i < vertices.size(); i++) {
-                auto p = vertices[i]->toExplicit3D();
-                printf("%g %g %g\n", p.X(), p.Y(), p.Z());
+                double x, y, z;
+                vertices[i]->getApproxXYZCoordinates(x, y, z);
+                printf("(%g, %g, %g), ", x, y, z);
             }
+            printf("\ninds: ");
             for(int i = 0; i < triangles.size(); i++) {
                 auto p = triangles[i];
-                printf("%d\n", int(p));
+                printf("%d, ", int(p));
             }
+            printf("\n");
         }
 
         inline void printHash()const
